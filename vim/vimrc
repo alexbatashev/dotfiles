@@ -1,0 +1,56 @@
+call plug#begin('~/.cmd/vim/plugged')
+Plug 'git://github.com/junegunn/vim-easy-align.git'
+Plug 'git://github.com/junegunn/vim-github-dashboard.git'
+Plug 'git://github.com/scrooloose/nerdtree.git'
+Plug 'git://github.com/dracula/vim.git'
+Plug 'git://github.com/airblade/vim-gitgutter.git'
+Plug 'git://github.com/itchyny/lightline.vim.git'
+Plug 'git://github.com/ararslan/llvm.vim.git'
+Plug 'git://github.com/ntpeters/vim-better-whitespace.git'
+Plug 'git://github.com/sheerun/vim-polyglot.git'
+Plug 'git://github.com/rickhowe/diffchar.vim.git'
+Plug 'git://github.com/lervag/vimtex.git'
+call plug#end()
+
+syntax on
+filetype plugin indent on
+set number
+let g:dracula_colorterm = 0
+color dracula
+set laststatus=2
+set noshowmode
+set updatetime=100
+map <C-o> :NERDTreeToggle<CR>
+let g:gitgutter_grep=''
+map <C-g> :GitGutterToggle<CR>
+let g:indent_guides_enable_on_vim_startup = 1
+let g:better_whitespace_enabled=1
+set expandtab
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+let g:indentLine_setConceal = 0
+let g:polyglot_disabled = ['latex']
+set colorcolumn=80
+highlight ColorColumn ctermbg=darkgray
+let g:tex_flavor='latex'
+let g:vimtex_quickfix_mode=0
+set conceallevel=1
+let g:tex_conceal='abdmg'
+set backspace=indent,eol,start
+set autoindent
+set copyindent
+set showmatch
+set smartcase
+set hlsearch
+set incsearch
+set history=1000
+set undolevels=1000
+set wildignore=*.swp,*.bak,*.pyc,*.class
+set pastetoggle=<F2>
+nnoremap j gj
+nnoremap k gk
+map <C-h> <C-w>h
+map <C-j> <C-w>j
+map <C-k> <C-w>k
+map <C-l> <C-w>l

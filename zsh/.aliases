@@ -1,0 +1,13 @@
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+# Recursively remove .DS_Store files
+alias cleanupds="find . -type f -name '*.DS_Store' -ls -delete"
+
+# Always enable colored `grep` output
+# Note: `GREP_OPTIONS="--color=auto"` is deprecated, hence the alias usage.
+alias grep='grep --color=auto'
+alias fgrep='fgrep --color=auto'
+alias egrep='egrep --color=auto'
+
+alias path='echo -e ${PATH//:/\\n}'
