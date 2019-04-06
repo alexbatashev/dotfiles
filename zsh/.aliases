@@ -11,3 +11,6 @@ alias fgrep='fgrep --color=auto'
 alias egrep='egrep --color=auto'
 
 alias path='echo -e ${PATH//:/\\n}'
+
+alias -g xcopy='xclip -selection clipboard'
+alias -g xpaste='xclip -selection clipboard -o'

@@ -36,3 +36,7 @@ bindkey "^[[4~" end-of-line
 bindkey "^[[5~" up-line-or-history
 bindkey "^[[6~" down-line-or-history
 bindkey "^?" backward-delete-char
+
+setopt menucomplete
+zstyle ':completion:*' menu select=1 _complete _ignored _approximate
+setopt correctall
