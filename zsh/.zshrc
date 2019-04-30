@@ -18,9 +18,6 @@ zplug "sindresorhus/pure", use:pure.zsh, from:github, as:theme
 
 zplug load
 
-autoload -U promptinit; promptinit
-prompt pure
-
 bindkey "^[OB" down-line-or-search
 bindkey "^[OC" forward-char
 bindkey "^[OD" backward-char
@@ -33,6 +30,16 @@ bindkey "^[[5~" up-line-or-history
 bindkey "^[[6~" down-line-or-history
 bindkey "^?" backward-delete-char
 
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+bindkey "^[[A" up-line-or-beginning-search # Up
+bindkey "^[[B" down-line-or-beginning-search # Down
+
 setopt menucomplete
 zstyle ':completion:*' menu select=1 _complete _ignored _approximate
 setopt correctall
+
+
+source /opt/intel/tbb/bin/tbbvars.sh
