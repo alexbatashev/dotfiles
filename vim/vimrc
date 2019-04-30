@@ -10,6 +10,9 @@ Plug 'git://github.com/ntpeters/vim-better-whitespace.git'
 Plug 'git://github.com/sheerun/vim-polyglot.git'
 Plug 'git://github.com/rickhowe/diffchar.vim.git'
 Plug 'git://github.com/lervag/vimtex.git'
+Plug 'git://github.com/tmux-plugins/vim-tmux.git'
+Plug 'git://github.com/tmux-plugins/vim-tmux-focus-events.git'
+Plug 'git://github.com/christoomey/vim-tmux-navigator.git'
 call plug#end()
 
 syntax on

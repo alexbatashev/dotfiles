@@ -4,6 +4,7 @@ export ZPLUG_HOME=$ZSH_ROOT/zplug
 source $ZPLUG_HOME/init.zsh
 source $ZSH_ROOT/.aliases
 source $ZSH_ROOT/.functions
+source $ZSH_ROOT/.workflow
 
 HISTFILE=~/.histfile
 HISTSIZE=1000
