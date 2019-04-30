@@ -15,6 +15,7 @@ zplug "zsh-users/zsh-completions"
 zplug "zsh-users/zsh-autosuggestions"
 zplug "mafredri/zsh-async", from:github
 zplug "sindresorhus/pure", use:pure.zsh, from:github, as:theme
+zplug "webyneter/docker-aliases", use:docker-aliases.plugin.zsh
 
 zplug load
 
@@ -41,5 +42,7 @@ setopt menucomplete
 zstyle ':completion:*' menu select=1 _complete _ignored _approximate
 setopt correctall
 
-
-source /opt/intel/tbb/bin/tbbvars.sh
+if [ -f "/opt/intel/tbb/bin/tbbvars.sh" ]
+then
+    source /opt/intel/tbb/bin/tbbvars.sh
+fi
