@@ -13,10 +13,13 @@ Plug 'git://github.com/lervag/vimtex.git'
 Plug 'git://github.com/tmux-plugins/vim-tmux.git'
 Plug 'git://github.com/tmux-plugins/vim-tmux-focus-events.git'
 Plug 'git://github.com/christoomey/vim-tmux-navigator.git'
+Plug 'git://github.com/terryma/vim-multiple-cursors.git'
+Plug 'git://github.com/scrooloose/nerdcommenter'
+Plug 'git://github.com/junegunn/fzf.vim'
 call plug#end()
 
 syntax on
-filetype plugin indent on
+filetype plugin on
 let g:dracula_colorterm = 0
 color dracula
 set laststatus=2
@@ -40,6 +43,7 @@ let g:vimtex_quickfix_mode=0
 set conceallevel=1
 let g:tex_conceal='abdmg'
 
+map ; :Files<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " General
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
