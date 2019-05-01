@@ -1,3 +1,5 @@
+let g:ale_completion_enabled = 1
+
 call plug#begin('~/.cmd/vim/plugged')
 Plug 'git://github.com/junegunn/vim-easy-align.git'
 Plug 'git://github.com/junegunn/vim-github-dashboard.git'
@@ -16,7 +18,13 @@ Plug 'git://github.com/christoomey/vim-tmux-navigator.git'
 Plug 'git://github.com/terryma/vim-multiple-cursors.git'
 Plug 'git://github.com/scrooloose/nerdcommenter'
 Plug 'git://github.com/junegunn/fzf.vim'
+Plug 'git://github.com/SirVer/ultisnips.git'
+Plug 'git://github.com/honza/vim-snippets.git'
+Plug 'git://github.com/w0rp/ale.git'
+Plug 'git://github.com/Xuyuanp/nerdtree-git-plugin.git'
 call plug#end()
+
+let $LANG = 'en'
 
 syntax on
 filetype plugin on
@@ -55,8 +63,8 @@ autocmd BufRead,BufNewFile *.md,*.txt,*.tex setlocal spell  " enable spell check
 set enc=utf-8
 set fenc=utf-8
 set termencoding=utf-8
-set history=1000 " How many lines of history to remember
-set undolevels=1000
+set history=5000 " How many lines of history to remember
+set undolevels=5000
 set cf " enable error files and error jumping
 set ffs=unix,dos,mac " support all three, in this order
 set viminfo+=! " make sure it can save viminfo
@@ -181,3 +189,13 @@ noremap <leader>yy "*Y
 
 " Preserve indentation while pasting text from the macOS clipboard
 noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Code quality
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:ale_sign_column_always = 1
+let g:ale_sign_error = '>'
+let g:ale_sign_warning = '?'
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-y>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
