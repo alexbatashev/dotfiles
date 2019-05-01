@@ -1,5 +1,5 @@
 function awf() {
-    cd ~/Projects/athena
+    cd ~/Projects/athena_workspace
     tmux new-session -d -n 'edit' vim
     tmux split-window -h -p 20
     tmux new-window -n 'test'
