@@ -11,7 +11,6 @@ Plug 'git://github.com/ararslan/llvm.vim.git'
 Plug 'git://github.com/ntpeters/vim-better-whitespace.git'
 Plug 'git://github.com/sheerun/vim-polyglot.git'
 Plug 'git://github.com/rickhowe/diffchar.vim.git'
-Plug 'git://github.com/lervag/vimtex.git'
 Plug 'git://github.com/tmux-plugins/vim-tmux.git'
 Plug 'git://github.com/tmux-plugins/vim-tmux-focus-events.git'
 Plug 'git://github.com/christoomey/vim-tmux-navigator.git'
@@ -22,6 +21,9 @@ Plug 'git://github.com/SirVer/ultisnips.git'
 Plug 'git://github.com/honza/vim-snippets.git'
 Plug 'git://github.com/w0rp/ale.git'
 Plug 'git://github.com/Xuyuanp/nerdtree-git-plugin.git'
+Plug 'git://github.com/terryma/vim-multiple-cursors.git'
+Plug 'git://github.com/tpope/vim-fugitive.git'
+Plug 'git://github.com/ctrlpvim/ctrlp.vim.git'
 call plug#end()
 
 let $LANG = 'en'
@@ -43,13 +45,8 @@ set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 let g:indentLine_setConceal = 0
-let g:polyglot_disabled = ['latex']
 set colorcolumn=80
 highlight ColorColumn ctermbg=darkgray
-let g:tex_flavor='latex'
-let g:vimtex_quickfix_mode=0
-set conceallevel=1
-let g:tex_conceal='abdmg'
 
 map ; :Files<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
