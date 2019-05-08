@@ -20,17 +20,10 @@ zplug "webyneter/docker-aliases", use:docker-aliases.plugin.zsh
 
 zplug load
 
-bindkey "^[OB" down-line-or-search
-bindkey "^[OC" forward-char
-bindkey "^[OD" backward-char
-bindkey "^[OF" end-of-line
-bindkey "^[OH" beginning-of-line
-bindkey "^[[1~" beginning-of-line
-bindkey "^[[3~" delete-char
-bindkey "^[[4~" end-of-line
-bindkey "^[[5~" up-line-or-history
-bindkey "^[[6~" down-line-or-history
-bindkey "^?" backward-delete-char
+bindkey "[D" backward-word
+bindkey "[C" forward-word
+bindkey "^[a" beginning-of-line
+bindkey "^[e" end-of-line
 
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
