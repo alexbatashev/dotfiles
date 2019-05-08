@@ -48,6 +48,19 @@ let g:indentLine_setConceal = 0
 set colorcolumn=80
 highlight ColorColumn ctermbg=darkgray
 
+set nolazyredraw
+" Performance improvments
+if has("mac")
+  set nocursorline
+
+  if exists("+relativenumber")
+    set norelativenumber
+  endif
+
+  set foldlevel=0
+  set foldmethod=manual
+endif
+
 map ; :Files<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " General
