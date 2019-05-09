@@ -19,11 +19,15 @@ Plug 'git://github.com/scrooloose/nerdcommenter'
 Plug 'git://github.com/junegunn/fzf.vim'
 Plug 'git://github.com/SirVer/ultisnips.git'
 Plug 'git://github.com/honza/vim-snippets.git'
-Plug 'git://github.com/w0rp/ale.git'
 Plug 'git://github.com/Xuyuanp/nerdtree-git-plugin.git'
 Plug 'git://github.com/terryma/vim-multiple-cursors.git'
 Plug 'git://github.com/tpope/vim-fugitive.git'
 Plug 'git://github.com/ctrlpvim/ctrlp.vim.git'
+Plug 'git://github.com/vim-scripts/matchit.zip.git'
+Plug 'git://github.com/ryanoasis/vim-devicons.git'
+Plug 'git://github.com/thaerkh/vim-workspace.git'
+Plug 'git://github.com/majutsushi/tagbar.git'
+Plug 'git://github.com/vim-syntastic/syntastic.git'
 call plug#end()
 
 let $LANG = 'en'
@@ -95,6 +99,8 @@ map <C-j> <C-w>j
 map <C-k> <C-w>k
 map <C-l> <C-w>l
 set pastetoggle=<F2>
+nnoremap <leader>s :ToggleWorkspace<CR>
+nmap <C-t> :TagbarToggle<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Files/Backups/Sessions
