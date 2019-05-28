@@ -29,6 +29,7 @@ Plug 'git://github.com/thaerkh/vim-workspace.git'
 Plug 'git://github.com/majutsushi/tagbar.git'
 Plug 'git://github.com/vim-syntastic/syntastic.git'
 Plug 'git://github.com/shime/vim-livedown.git'
+Plug 'git://github.com/w0rp/ale.git'
 call plug#end()
 
 let $LANG = 'en'
@@ -102,6 +103,7 @@ map <C-l> <C-w>l
 set pastetoggle=<F2>
 nnoremap <leader>s :ToggleWorkspace<CR>
 nmap <C-t> :TagbarToggle<CR>
+nnoremap <leader>q :bp<cr>:bd #<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Files/Backups/Sessions
