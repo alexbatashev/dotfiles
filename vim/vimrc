@@ -1,6 +1,6 @@
 let g:ale_completion_enabled = 1
 
-call plug#begin('~/.cmd/vim/plugged')
+call plug#begin('~/.dotfiles/vim/plugged')
 Plug 'git://github.com/junegunn/vim-easy-align.git'
 Plug 'git://github.com/junegunn/vim-github-dashboard.git'
 Plug 'git://github.com/scrooloose/nerdtree.git'
@@ -10,7 +10,6 @@ Plug 'git://github.com/itchyny/lightline.vim.git'
 Plug 'git://github.com/ararslan/llvm.vim.git'
 Plug 'git://github.com/ntpeters/vim-better-whitespace.git'
 Plug 'git://github.com/sheerun/vim-polyglot.git'
-Plug 'git://github.com/rickhowe/diffchar.vim.git'
 Plug 'git://github.com/tmux-plugins/vim-tmux.git'
 Plug 'git://github.com/tmux-plugins/vim-tmux-focus-events.git'
 Plug 'git://github.com/christoomey/vim-tmux-navigator.git'
@@ -27,9 +26,9 @@ Plug 'git://github.com/vim-scripts/matchit.zip.git'
 Plug 'git://github.com/ryanoasis/vim-devicons.git'
 Plug 'git://github.com/thaerkh/vim-workspace.git'
 Plug 'git://github.com/majutsushi/tagbar.git'
-Plug 'git://github.com/vim-syntastic/syntastic.git'
 Plug 'git://github.com/shime/vim-livedown.git'
 Plug 'git://github.com/w0rp/ale.git'
+Plug 'dracula/vim', { 'as': 'dracula' }
 call plug#end()
 
 let $LANG = 'en'
@@ -71,10 +70,6 @@ map ; :Files<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " General
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" global enable spell check
-"set spell spelllang=en_us   " spell check go to highlighted word and "z=" to see list to turn off set nospell
-setlocal spell spelllang=ru,en
-autocmd BufRead,BufNewFile *.md,*.txt,*.tex setlocal spell  " enable spell check for certain files
 " set UTF-8 encoding
 set enc=utf-8
 set fenc=utf-8
@@ -104,6 +99,10 @@ set pastetoggle=<F2>
 nnoremap <leader>s :ToggleWorkspace<CR>
 nmap <C-t> :TagbarToggle<CR>
 nnoremap <leader>q :bp<cr>:bd #<cr>
+" global enable spell check
+"set spell spelllang=en_us   " spell check go to highlighted word and "z=" to see list to turn off set nospell
+setlocal spell spelllang=ru,en
+autocmd BufRead,BufNewFile *.md,*.txt,*.tex setlocal spell  " enable spell check for certain files
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Files/Backups/Sessions
