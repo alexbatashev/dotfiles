@@ -7,6 +7,7 @@
 	autocrlf = input
 	preloadindex = true
     fscache = true
+    excludesfile = ~/.dotfiles/.gitignore_default
     # Make `git rebase` safer on macOS
 	# More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
     trustctime = false

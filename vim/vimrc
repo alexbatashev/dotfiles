@@ -29,6 +29,7 @@ Plug 'git://github.com/majutsushi/tagbar.git'
 Plug 'git://github.com/shime/vim-livedown.git'
 Plug 'git://github.com/w0rp/ale.git'
 Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'embear/vim-localvimrc'
 call plug#end()
 
 let $LANG = 'en'
