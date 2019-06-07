@@ -27,7 +27,7 @@ Plug 'git://github.com/thaerkh/vim-workspace.git'
 Plug 'git://github.com/majutsushi/tagbar.git'
 Plug 'git://github.com/shime/vim-livedown.git'
 Plug 'git://github.com/w0rp/ale.git'
-Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'crusoexia/vim-monokai', { 'as': 'monokai' }
 Plug 'embear/vim-localvimrc'
 Plug 'junegunn/fzf', { 'dir': '~/.dotfiles/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -37,8 +37,7 @@ let $LANG = 'en'
 
 syntax on
 filetype plugin on
-let g:dracula_colorterm = 0
-color dracula
+colorscheme monokai
 set laststatus=2
 set noshowmode
 set updatetime=100
