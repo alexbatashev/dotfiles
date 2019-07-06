@@ -1,10 +1,7 @@
 let g:ale_completion_enabled = 1
 
 call plug#begin('~/.dotfiles/vim/plugged')
-Plug 'git://github.com/junegunn/vim-easy-align.git'
-Plug 'git://github.com/junegunn/vim-github-dashboard.git'
 Plug 'git://github.com/scrooloose/nerdtree.git'
-Plug 'git://github.com/dracula/vim.git'
 Plug 'git://github.com/airblade/vim-gitgutter.git'
 Plug 'git://github.com/itchyny/lightline.vim.git'
 Plug 'git://github.com/ararslan/llvm.vim.git'
@@ -13,14 +10,12 @@ Plug 'git://github.com/sheerun/vim-polyglot.git'
 Plug 'git://github.com/tmux-plugins/vim-tmux.git'
 Plug 'git://github.com/tmux-plugins/vim-tmux-focus-events.git'
 Plug 'git://github.com/christoomey/vim-tmux-navigator.git'
-Plug 'git://github.com/terryma/vim-multiple-cursors.git'
 Plug 'git://github.com/scrooloose/nerdcommenter'
 Plug 'git://github.com/SirVer/ultisnips.git'
 Plug 'git://github.com/honza/vim-snippets.git'
 Plug 'git://github.com/Xuyuanp/nerdtree-git-plugin.git'
 Plug 'git://github.com/terryma/vim-multiple-cursors.git'
 Plug 'git://github.com/tpope/vim-fugitive.git'
-Plug 'git://github.com/ctrlpvim/ctrlp.vim.git'
 Plug 'git://github.com/vim-scripts/matchit.zip.git'
 Plug 'git://github.com/ryanoasis/vim-devicons.git'
 Plug 'git://github.com/thaerkh/vim-workspace.git'
@@ -213,9 +208,15 @@ noremap <leader>p :set paste<CR>:put  *<CR>:set nopaste<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Code quality
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:ale_linters_explicit = 1
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
 let g:ale_sign_column_always = 1
 let g:ale_sign_error = '>'
+let g:ale_use_ch_sendraw = 1
 let g:ale_sign_warning = '?'
+let g:ale_lint_delay = 50
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-y>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
