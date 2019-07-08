@@ -1,0 +1,7 @@
+let g:ale_cpp_clangd_executable="clangd-8"
+let g:ale_llvm_llc_executable="llc-8"
+let g:ale_linters = {
+            \   'cpp': ['clangd'],
+            \   'llvm': ['llc']
+            \}
+
