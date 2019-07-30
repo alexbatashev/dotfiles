@@ -78,8 +78,13 @@ extract () {
 }
 
 conf_sycl() {
+  GENERATOR="Unix Makefiles"
+  if [ -n $2 ] ; then
+    GENERATOR=$2;
+  fi
   if [ -n $1 ] ; then
     cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+    -G $GENERATOR \
     -DCMAKE_BUILD_TYPE=Release \
     -DLLVM_EXTERNAL_PROJECTS="llvm-spirv;sycl" \
     -DLLVM_EXTERNAL_SYCL_SOURCE_DIR=$SYCL_HOME/sycl \
@@ -88,5 +93,18 @@ conf_sycl() {
     $SYCL_HOME/llvm
   else
     echo "Please, provide build type"
+  fi
+}
+
+dotall() {
+  OTYPE="svg"
+  if [ -n $2 ] ; then
+    OTYPE=$2;
+  fi
+  if [ -n $1 ] ; then
+    for f in *.dot
+    do
+      dot -T $OTYPE $f -o $1/$f.$OTYPE;
+    done
   fi
 }
