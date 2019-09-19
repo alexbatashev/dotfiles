@@ -36,7 +36,7 @@ colorscheme monokai
 set laststatus=2
 set noshowmode
 set updatetime=100
-map <C-o> :NERDTreeToggle<CR>
+"map <C-o> :NERDTreeToggle<CR>
 nnoremap <C-p> :Files<Cr>
 let g:gitgutter_grep=''
 map <C-g> :GitGutterToggle<CR>

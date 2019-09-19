@@ -90,6 +90,7 @@ conf_sycl() {
     -DLLVM_EXTERNAL_SYCL_SOURCE_DIR=$SYCL_HOME/sycl \
     -DLLVM_EXTERNAL_LLVM_SPIRV_SOURCE_DIR=$SYCL_HOME/llvm-spirv \
     -DLLVM_ENABLE_PROJECTS="clang;llvm-spirv;sycl" \
+    -DOpenCL_BUILD_WITH_SYSTEM_SDK=ON \
     $SYCL_HOME/llvm
   else
     echo "Please, provide build type"
