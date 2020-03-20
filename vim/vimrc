@@ -12,7 +12,7 @@ Plug 'git://github.com/tmux-plugins/vim-tmux-focus-events.git'
 Plug 'git://github.com/christoomey/vim-tmux-navigator.git'
 Plug 'git://github.com/scrooloose/nerdcommenter'
 Plug 'git://github.com/SirVer/ultisnips.git'
-Plug 'git://github.com/honza/vim-snippets.git'
+"Plug 'git://github.com/honza/vim-snippets.git'
 Plug 'git://github.com/Xuyuanp/nerdtree-git-plugin.git'
 Plug 'git://github.com/terryma/vim-multiple-cursors.git'
 Plug 'git://github.com/tpope/vim-fugitive.git'
@@ -26,6 +26,7 @@ Plug 'crusoexia/vim-monokai', { 'as': 'monokai' }
 Plug 'embear/vim-localvimrc'
 Plug 'junegunn/fzf', { 'dir': '~/.dotfiles/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+Plug 'lervag/vimtex'
 call plug#end()
 
 let $LANG = 'en'
@@ -150,9 +151,6 @@ set novisualbell " don't blink
 set ai " autoindent (filetype indenting instead)
 set nosi " smartindent (filetype indenting instead)
 set cindent " do c-style indenting
-set softtabstop=4 " unify
-set shiftwidth=4 " unify
-set tabstop=4 " real tabs should be 4, but they will show with set list on
 set copyindent " but above all -- follow the conventions laid before us
 " wrap lines at 120 chars. 80 is somewhat antiquated with nowadays displays.
 set textwidth=120
@@ -217,6 +215,15 @@ let g:ale_use_ch_sendraw = 1
 let g:ale_sign_warning = '?'
 let g:ale_lint_delay = 50
 let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-y>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+let g:UltiSnipsSnippetDirectories=['snips']
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" LaTeX
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:tex_flavor='latex'
+let g:vimtex_quickfix_mode=0
+set conceallevel=1
+let g:tex_conceal='abdmg'
+let g:polyglot_disabled = ['latex']
