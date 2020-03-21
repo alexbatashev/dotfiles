@@ -1,4 +1,3 @@
-export XDG_CONFIG_HOME=$HOME/.dotfiles
 set -g theme_display_date no
 
 function mkd
