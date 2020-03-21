@@ -1,2 +1,9 @@
 vim/plugged/
 .fzf
+!Code/
+Code/*
+!Code/User
+
+Code/User/*
+!/Code/User/snippets/
+!/Code/User/settings.json

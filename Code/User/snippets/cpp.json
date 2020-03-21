@@ -1,0 +1,21 @@
+{
+	"SYCL basics": {
+		"prefix": "syclapp",
+		"body": [
+			"#include <CL/sycl.hpp>",
+			"#include <iostream>",
+			"",
+			"int main() {",
+			"  try {",
+			"    sycl::queue q{sycl::default_selector{}};",
+			"    q.submit([&](sycl::handler& cgh) {",
+			"      $1",
+			"    });",
+			"   } catch (sycl::exception e) {",
+			"     std::cerr << e.what() << std::endl;",
+			"   }",
+			"}"
+		],
+		"description": "Basic SYCL application"
+	}
+}
