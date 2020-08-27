@@ -7,6 +7,7 @@ brew tap caskroom/cask
 
 brew cask install visual-studio-code
 brew cask install iterm2
+brew cask install docker
 brew install nvim
 brew install zsh
 brew install ripgrep
