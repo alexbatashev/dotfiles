@@ -12,3 +12,5 @@ brew install nvim
 brew install zsh
 brew install ripgrep
 brew install nodejs
+brew install wget
+brew install cmake ninja

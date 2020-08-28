@@ -9,3 +9,5 @@ fi
 mkdir -p ~/.config/nvim/
 echo "set runtimepath^=~/dotfiles/vim" >> ~/.config/nvim/init.vim
 echo "source ~/dotfiles/vim/vimrc" >> ~/.config/nvim/init.vim
+
+echo "source $HOME/dotfiles/zshrc" >> $HOME/.zshrc
