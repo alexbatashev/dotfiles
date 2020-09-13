@@ -6,6 +6,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   $DIR/macos.sh
 fi
 
+if [ -f /etc/redhat-release ]; then
+  $DIR/fedora.sh
+fi
+
 mkdir -p ~/.config/nvim/
 echo "set runtimepath^=~/dotfiles/vim" >> ~/.config/nvim/init.vim
 echo "source ~/dotfiles/vim/vimrc" >> ~/.config/nvim/init.vim
