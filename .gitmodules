@@ -4,3 +4,9 @@
 [submodule "tmux/tpm"]
 	path = tmux/tpm
 	url = git://github.com/tmux-plugins/tpm
+[submodule "oh-my-zsh"]
+  path = "oh-my-zsh"
+  url = https://github.com/ohmyzsh/ohmyzsh.git
+[submodule "dracula-zsh"]
+	path = dracula-zsh
+	url = https://github.com/dracula/zsh.git

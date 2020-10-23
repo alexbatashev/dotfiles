@@ -16,7 +16,7 @@ Plug 'chriskempson/base16-vim'
 Plug 'joshdick/onedark.vim'
 Plug 'nicknisi/vim-base16-lightline'
 Plug 'vim-airline/vim-airline'
-Plug 'altercation/vim-colors-solarized'
+Plug 'dracula/vim', { 'as': 'dracula' }
 call plug#end()
 
 let $LANG = 'en'
@@ -37,13 +37,11 @@ set shiftwidth=2
 set softtabstop=2
 let g:indentLine_setConceal = 0
 set colorcolumn=80
-"highlight ColorColumn ctermbg=darkgray
-"colorscheme onedark
-set background=dark
-colorscheme solarized
+colorscheme dracula
+hi Normal guibg=NONE ctermbg=NONE
 
 set nolazyredraw
-" Performance improvments
+" Performance improvements
 if has("mac")
   set nocursorline
 
