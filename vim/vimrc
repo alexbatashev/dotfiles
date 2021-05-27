@@ -37,7 +37,7 @@ set shiftwidth=2
 set softtabstop=2
 let g:indentLine_setConceal = 0
 set colorcolumn=80
-" colorscheme dracula
+colorscheme onedark
 hi Normal guibg=NONE ctermbg=NONE
 set hidden
 set nobackup
