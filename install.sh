@@ -6,6 +6,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   $DIR/macos.sh
 elif [ -f /etc/redhat-release ]; then
   $DIR/fedora.sh
+elif [ -f /etc/arch-release ]; then
+  $DIR/arch.sh
 else
   $DIR/tumbleweed.sh
 fi
