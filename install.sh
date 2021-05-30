@@ -17,3 +17,5 @@ echo "set runtimepath^=~/dotfiles/vim" >> ~/.config/nvim/init.vim
 echo "source ~/dotfiles/vim/vimrc" >> ~/.config/nvim/init.vim
 
 echo "source $HOME/dotfiles/zshrc" >> $HOME/.zshrc
+
+echo "Run :PlugInstall and :CocInstall coc-clangd for full experience"
