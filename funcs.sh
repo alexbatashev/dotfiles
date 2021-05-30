@@ -71,3 +71,24 @@ dotall() {
     done
   fi
 }
+
+enable_llvm_clangd() {
+  BASE_DIR=
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    BASE_DIR=~/Library/Preferences/clangd/
+  else
+    BASE_DIR=~/.config/clangd/
+  fi
+  mkdir -p $BASE_DIR
+  echo -n "---\n" >> $BASE_DIR/config.yaml
+  echo -n "If:\n" >> $BASE_DIR/config.yaml
+  echo -n "  PatternMatch: " >> $BASE_DIR/config.yaml
+  echo -n $1 >> $BASE_DIR/config.yaml
+  echo -n ".*\n" >> $BASE_DIR/config.yaml
+  echo -n "Index:\n" >> $BASE_DIR/config.yaml
+  echo -n "  External:\n" >> $BASE_DIR/config.yaml
+  echo -n "    Server: clangd-index.llvm.org:5900\n" >> $BASE_DIR/config.yaml
+  echo -n "    MountPoint: " >> $BASE_DIR/config.yaml
+  echo -n $1 >> $BASE_DIR/config.yaml
+  echo -n "\n" >> $BASE_DIR/config.yaml
+}
