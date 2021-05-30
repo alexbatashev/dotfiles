@@ -18,4 +18,7 @@ echo "source ~/dotfiles/vim/vimrc" >> ~/.config/nvim/init.vim
 
 echo "source $HOME/dotfiles/zshrc" >> $HOME/.zshrc
 
+echo "[include]" >> ~/.gitconfig
+echo "  path = ~/dotfiles/gitconfig" >> ~/.gitconfig
+
 echo "Run :PlugInstall and :CocInstall coc-clangd for full experience"
