@@ -7,6 +7,8 @@ source $HOME/dotfiles/powerlevel10k/powerlevel10k.zsh-theme
 
 ZSH_THEME="powerlevel10k"
 
+plugins=(git tmux)
+
 alias tmux='tmux -u'
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.

@@ -17,6 +17,7 @@ Plug 'nicknisi/vim-base16-lightline'
 " Vim Airline theme
 Plug 'joshdick/onedark.vim'
 Plug 'vim-airline/vim-airline'
+Plug 'liuchengxu/vista.vim'
 call plug#end()
 
 let $LANG = 'en'
@@ -151,11 +152,6 @@ set list " we do what to show tabs, to ensure we get them out of my files
 set listchars=tab:>-,trail:- " show tabs and trailing whitespace
 " Auto start NERD tree when opening a directory
 autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | wincmd p | endif
-
-" Auto start NERD tree if no files are specified
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | exe 'NERDTree' | endif
-
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Visual Cues
@@ -299,4 +295,20 @@ nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
 nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+" Switch source-header
+nnoremap <silent><nowait> <space>h  :<C-u>CocCommand clangd.switchSourceHeader<CR>
 
+function! NearestMethodOrFunction() abort
+  return get(b:, 'vista_nearest_method_or_function', '')
+endfunction
+
+set statusline+=%{NearestMethodOrFunction()}
+
+" By default vista.vim never run if you don't call it explicitly.
+"
+" If you want to show the nearest function in your statusline automatically,
+" you can add the following line to your vimrc
+autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
+
+let g:vista_default_executive = 'coc'
+nnoremap <C-t> :Vista<CR>
