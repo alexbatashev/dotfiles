@@ -1,1 +1,6 @@
 alias vim="nvim"
+alias perfhw="perf stat -e cycles,instructions,cache-references,cache-misses,bus-cycles"
+alias perfio="perf stat -e 'block:*'"
+alias perfgdwarf="perf record --call-graph dwarf"
+alias perfglbr="perf record --call-graph lbr"
+alias perfrpt="perf report -g 'graph,0.5,caller'"
