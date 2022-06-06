@@ -5,12 +5,12 @@ call plug#begin('~/.dotfiles/vim/plugged')
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'lervag/vimtex'
-Plug 'git://github.com/ararslan/llvm.vim.git'
+Plug 'https://github.com/ararslan/llvm.vim.git'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'preservim/nerdtree'
 Plug 'https://tpope.io/vim/fugitive.git'
 " Plug 'jiangmiao/auto-pairs'
-Plug 'git://github.com/ntpeters/vim-better-whitespace.git'
+Plug 'https://github.com/ntpeters/vim-better-whitespace.git'
 Plug 'embear/vim-localvimrc'
 Plug 'chriskempson/base16-vim'
 Plug 'nicknisi/vim-base16-lightline'
