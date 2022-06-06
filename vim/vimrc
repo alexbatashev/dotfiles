@@ -27,7 +27,7 @@ filetype plugin on
 set laststatus=2
 set noshowmode
 set updatetime=100
-nnoremap <C-p> :Files<Cr>
+nnoremap <C-p> :GFiles<Cr>
 let g:gitgutter_grep=''
 map <C-g> :GitGutterToggle<CR>
 let g:indent_guides_enable_on_vim_startup = 1

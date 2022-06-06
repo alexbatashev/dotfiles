@@ -11,5 +11,12 @@ plugins=(git tmux)
 
 alias tmux='tmux -u'
 
+if [ -f /etc/redhat-release ]; then
+  bindkey '^[[H' beginning-of-line
+  bindkey '^[[F' end-of-line
+  bindkey "^[[3~" delete-char
+fi
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f $HOME/dotfiles/p10k.zsh ]] || source $HOME/dotfiles/p10k.zsh
+source $HOME/dotfiles/zsh-autocomplete/zsh-autocomplete.plugin.zsh
