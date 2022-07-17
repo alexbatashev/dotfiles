@@ -18,6 +18,7 @@ Plug 'nicknisi/vim-base16-lightline'
 Plug 'joshdick/onedark.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'liuchengxu/vista.vim'
+Plug 'airblade/vim-gitgutter'
 call plug#end()
 
 let $LANG = 'en'
@@ -27,9 +28,14 @@ filetype plugin on
 set laststatus=2
 set noshowmode
 set updatetime=100
-nnoremap <C-p> :GFiles<Cr>
+nnoremap <C-p> :Files<Cr>
+
+if executable('rg')
+nnoremap <C-f> :Rg<Cr>
+endif
+
 let g:gitgutter_grep=''
-map <C-g> :GitGutterToggle<CR>
+map <C-g> :GFiles<CR>
 let g:indent_guides_enable_on_vim_startup = 1
 let g:better_whitespace_enabled=1
 set expandtab
@@ -312,3 +318,12 @@ autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
 
 let g:vista_default_executive = 'coc'
 nnoremap <C-t> :Vista<CR>
+
+inoremap <expr> <c-x><c-f> fzf#vim#complete#path('rg --files')
+if executable('rg')
+  let $FZF_DEFAULT_COMMAND = 'rg --files --hidden --follow --glob "!.git/*"'
+  set grepprg=rg\ --vimgrep
+  command! -bang -nargs=* Find call fzf#vim#grep('rg --column --line-number --no-heading --fixed-strings --ignore-case --hidden --follow --glob "!.git/*" --color "always" '.shellescape(<q-args>).'| tr -d "\017"', 1, <bang>0)
+endif
+command! -bang -nargs=? -complete=dir Files
+    \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
