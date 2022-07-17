@@ -19,4 +19,7 @@ fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f $HOME/dotfiles/p10k.zsh ]] || source $HOME/dotfiles/p10k.zsh
-source $HOME/dotfiles/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+source $HOME/dotfiles/zsh_plugins.sh
+
+_zpcompinit_custom;
+autoload -U compinit; compinit;

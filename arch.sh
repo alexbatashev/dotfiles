@@ -1,6 +1,6 @@
 #! /bin/bash
 
-sudo pacman -S yay zsh neovim cmake ninja ripgrep wget perf tmux
+sudo pacman -S yay zsh neovim cmake ninja ripgrep wget perf tmux exa
 
 yay brave
 
