@@ -19,6 +19,7 @@ Plug 'joshdick/onedark.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'liuchengxu/vista.vim'
 Plug 'airblade/vim-gitgutter'
+Plug 'rust-lang/rust.vim'
 call plug#end()
 
 let $LANG = 'en'
