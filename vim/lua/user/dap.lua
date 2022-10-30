@@ -38,7 +38,7 @@ dap.configurations.rust = dap.configurations.cpp
 
 vim.cmd([[nnoremap <F5> <Cmd>lua require'dap'.run(require'dap'.configurations.cpp)<CR>]])
 vim.cmd([[nnoremap <F3> <Cmd>lua require'dap'.run_last()<CR>]])
-vim.cmd([[nnoremap <C-b> <Cmd>lua require'dap'.toggle_breakpoint()<CR>]])
+vim.cmd([[nnoremap <Leader>b <Cmd>lua require'dap'.toggle_breakpoint()<CR>]])
 vim.cmd([[nnoremap <Leader>B <Cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>]])
 vim.cmd([[nnoremap <C-c> <Cmd>lua require'dap'.continue()<CR>]])
 vim.cmd([[nnoremap <C-s> <Cmd>lua require'dap'.step_into()<CR>]])
