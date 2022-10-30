@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
@@ -24,7 +24,9 @@ ln -s ~/dotfiles/kitty ~/.config/kitty
 
 echo "source $HOME/dotfiles/zshrc" >> $HOME/.zshrc
 
+pip install cmake-language-server
+
 echo "[include]" >> ~/.gitconfig
 echo "  path = ~/dotfiles/gitconfig" >> ~/.gitconfig
 
-echo "Run :PlugInstall and :CocInstall coc-clangd for full experience"
+echo "Run :PackerSync for full experience"

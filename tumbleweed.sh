@@ -1,5 +1,5 @@
-#! /bin/bash
+#!/bin/bash -e
 
 sudo zypper install zsh neovim cmake ninja ripgrep perf nodejs-common graphviz 
 
-chsh -s $(which zsh)
+./linux_common.sh
