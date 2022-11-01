@@ -18,3 +18,9 @@ vim.opt.smartcase = true
 -- vim.opt.termguicolors = true
 vim.opt.undofile = true
 vim.opt.wrap = false
+
+vim.cmd([[au! BufRead,BufNewFile *.ll     set filetype=llvm]])
+vim.cmd([[au! BufRead,BufNewFile *.td     set filetype=tablegen]])
+vim.cmd([[au! BufRead,BufNewFile *.rst    set filetype=rest]])
+vim.cmd([[au! BufRead,BufNewFile *.mlir   set filetype=mlir]])
+
