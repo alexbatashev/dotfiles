@@ -76,7 +76,9 @@ export AUTO_NOTIFY_THRESHOLD=30
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f $HOME/dotfiles/p10k.zsh ]] || source $HOME/dotfiles/p10k.zsh
-source $HOME/dotfiles/zsh_plugins.sh
+# source $HOME/dotfiles/zsh_plugins.sh
+source <(antibody init)
+antibody bundle < $HOME/dotfiles/zsh_plugins.txt
 
 _zpcompinit_custom;
 autoload -U compinit; compinit;
