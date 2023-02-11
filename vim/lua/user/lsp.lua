@@ -1,3 +1,5 @@
+local rt = require("rust-tools")
+
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 local opts = { noremap=true, silent=true }
@@ -44,16 +46,21 @@ require('lspconfig')['tsserver'].setup{
     on_attach = on_attach,
     flags = lsp_flags,
 }
-require('lspconfig')['rust_analyzer'].setup{
-    on_attach = on_attach,
-    flags = lsp_flags,
-    -- Server-specific settings...
-    settings = {
-      ["rust-analyzer"] = {}
-    }
-}
+
+rt.setup({
+  server = {
+    on_attach = function(_, bufnr)
+      -- Hover actions
+      vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
+      -- Code action groups
+      vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
+    end,
+  },
+})
+
 require'lspconfig'.ansiblels.setup{}
 require'lspconfig'.clangd.setup{}
+require("clangd_extensions").setup()
 require'lspconfig'.cmake.setup{}
 require'lspconfig'.mlir_pdll_lsp_server.setup{}
 require'lspconfig'.mlir_lsp_server.setup{}

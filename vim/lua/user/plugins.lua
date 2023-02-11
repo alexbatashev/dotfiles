@@ -25,6 +25,8 @@ packer.startup(function(use)
 			require("user.lsp")
 		end,
 	}
+	use 'simrat39/rust-tools.nvim'
+        use 'p00f/clangd_extensions.nvim'
 
 	use {
 		"nvim-neo-tree/neo-tree.nvim",
@@ -69,6 +71,8 @@ packer.startup(function(use)
 			require("user.toggleterm")
 	  	end
 	}
+
+        use 'nvim-lua/plenary.nvim'
 
 	use {
 	  "mfussenegger/nvim-dap",

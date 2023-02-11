@@ -82,3 +82,5 @@ antibody bundle < $HOME/dotfiles/zsh_plugins.txt
 
 _zpcompinit_custom;
 autoload -U compinit; compinit;
+
+export PATH=$HOME/dotfiles/bin:$PATH
