@@ -16,9 +16,7 @@ if [[ "$OSTYPE" != "darwin"* ]]; then
   sudo bash -c "curl -sfL git.io/antibody | sh -s - -b /usr/local/bin"
 fi
 
-mkdir -p ~/.config/nvim/
-echo "set runtimepath^=~/dotfiles/vim" >> ~/.config/nvim/init.vim
-echo "source ~/dotfiles/vim/vimrc" >> ~/.config/nvim/init.vim
+ln -s ~/dotfiles/vim ~/.config/nvim
 
 ln -s ~/dotfiles/kitty ~/.config/kitty
 

@@ -1,10 +1,10 @@
 #!/bin/bash -e
 
-sudo pacman -S yay zsh neovim cmake ninja ripgrep wget perf tmux exa
+sudo pacman -S yay zsh neovim cmake ninja ripgrep wget perf tmux exa bat fd
 
 yay brave
 
 sudo pacman -S clang lldb gdb openmp lld libc++
 sudo pacman -S nodejs
 
-sudo mv /tmp/fonts/*.ttf /usr/share/fonts
+./linux_common.sh
