@@ -52,6 +52,10 @@ local merge = function(t1, t2)
     return t1
 end
 
+vim.g.coq_settings = {
+  auto_start = true,
+}
+
 local lsp = require "lspconfig"
 local coq = require "coq"
 
