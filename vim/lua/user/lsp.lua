@@ -1,5 +1,3 @@
-local rt = require("rust-tools")
-
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
 local opts = { noremap=true, silent=true }
@@ -32,37 +30,42 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
   vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
   vim.keymap.set('n', '<space>f', function() vim.lsp.buf.format { async = true } end, bufopts)
+ if client.server_capabilities.documentFormattingProvider then
+      vim.cmd [[
+        augroup Format
+          au! * <buffer>
+          au BufWritePre <buffer> lua vim.lsp.buf.format(nil, nil, {'efm'})
+        augroup END
+      ]]
+  end
 end
 
-local lsp_flags = {
-  -- This is the default in Nvim 0.7+
-  debounce_text_changes = 150,
-}
-require('lspconfig')['pyright'].setup{
-    on_attach = on_attach,
-    flags = lsp_flags,
-}
-require('lspconfig')['tsserver'].setup{
-    on_attach = on_attach,
-    flags = lsp_flags,
-}
+local merge = function(t1, t2)
+    for k, v in pairs(t2) do
+        if (type(v) == "table") and (type(t1[k] or false) == "table") then
+            merge(t1[k], t2[k])
+        else
+            t1[k] = v
+        end
+    end
 
-rt.setup({
-  server = {
-    on_attach = function(_, bufnr)
-      -- Hover actions
-      vim.keymap.set("n", "<C-space>", rt.hover_actions.hover_actions, { buffer = bufnr })
-      -- Code action groups
-      vim.keymap.set("n", "<Leader>a", rt.code_action_group.code_action_group, { buffer = bufnr })
-    end,
-  },
-})
+    return t1
+end
 
-require'lspconfig'.ansiblels.setup{}
-require'lspconfig'.clangd.setup{}
+local lsp = require "lspconfig"
+local coq = require "coq"
+
+local do_setup = function(name, config)
+    lsp[name].setup(coq.lsp_ensure_capabilities(merge({
+        on_attach = on_attach,
+        flags = {debounce_text_changes = 150},
+        root_dir = lsp.util.root_pattern {".git"}
+    }, config)))
+end
+
+do_setup('clangd', {})
+do_setup('rust_analyzer', {root_dir = lsp.util.root_pattern {"Cargo.toml"}})
+do_setup('cmake', {})
+
 require("clangd_extensions").setup()
-require'lspconfig'.cmake.setup{}
-require'lspconfig'.mlir_pdll_lsp_server.setup{}
-require'lspconfig'.mlir_lsp_server.setup{}
-require'lspconfig'.tblgen_lsp_server.setup{}
 

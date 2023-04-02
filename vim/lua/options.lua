@@ -14,6 +14,7 @@ vim.opt.number = true
 vim.opt.scrolloff = 8
 vim.opt.shiftwidth = 2
 vim.opt.smartcase = true
+vim.opt.mouse = ""
 -- TODO figure out why this does not work for tmux
 -- vim.opt.termguicolors = true
 vim.opt.undofile = true
@@ -24,3 +25,16 @@ vim.cmd([[au! BufRead,BufNewFile *.td     set filetype=tablegen]])
 vim.cmd([[au! BufRead,BufNewFile *.rst    set filetype=rest]])
 vim.cmd([[au! BufRead,BufNewFile *.mlir   set filetype=mlir]])
 
+vim.keymap.set('n', '<C-h>', 'zh', silent) -- left
+vim.keymap.set('n', '<C-l>', 'zl', silent) -- right
+
+-- smart deletion, dd
+-- It solves the issue, where you want to delete empty line, but dd will override you last yank.
+-- Code below will check if u are deleting empty line, if so - use black hole register.
+-- [src: https://www.reddit.com/r/neovim/comments/w0jzzv/comment/igfjx5y/?utm_source=share&utm_medium=web2x&context=3]
+local function smart_dd()
+	if vim.api.nvim_get_current_line():match("^%s*$") then
+		return "\"_dd"
+	else return "dd" end
+end
+vim.keymap.set("n", "dd", smart_dd, { noremap = true, expr = true })

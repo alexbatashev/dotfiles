@@ -25,8 +25,26 @@ packer.startup(function(use)
 			require("user.lsp")
 		end,
 	}
-	use 'simrat39/rust-tools.nvim'
+	use("kabouzeid/nvim-lspinstall")
+	use {'ms-jpq/coq_nvim', branch = 'coq'}
+        use {'ms-jpq/coq.artifacts', branch = 'artifacts'}
+
+        use {
+            'ms-jpq/coq.thirdparty',
+            requires = {'ms-jpq/coq_nvim'},
+            config = function()
+                require("coq_3p") {
+                    {src = "nvimlua", short_name = "nLUA"},
+                    {src = "copilot", short_name = "COP", accept_key = "<c-f>"}
+                }
+            end
+        }
+
+	-- Temporarily disable until I figure out how to config this thing
+	-- use 'simrat39/rust-tools.nvim'
         use 'p00f/clangd_extensions.nvim'
+
+        use { "sitiom/nvim-numbertoggle" }
 
 	use {
 		"nvim-neo-tree/neo-tree.nvim",
@@ -107,44 +125,6 @@ packer.startup(function(use)
             require("nvim-autopairs").setup {}
           end
         }
-
-	use {
-		"hrsh7th/nvim-cmp",
-		tag = "v0.0.1",
-		event = "InsertEnter",
-		requires = {
-	          "windwp/nvim-autopairs",
-		},
-    	        config = function()
-		   require "user.cmp"
-		end,
-	}
-
-        use {
-          "onsails/lspkind.nvim",
-          after = "nvim-cmp"
-        }
-
-	use {
-	    "hrsh7th/cmp-buffer",
-	    after = "nvim-cmp",
-	}
-
-	use {
-	    "hrsh7th/cmp-path",
-	    after = "nvim-cmp",
-	}
-
-	use {
-		"saadparwaiz1/cmp_luasnip",
-		after = "nvim-cmp",
-		requires = {
-		  "L3MON4D3/LuaSnip",
-		},
-		config = function()
-			require("user.luasnip")
-		end,
-	}
 
 	use({
 		"Pocco81/auto-save.nvim",
