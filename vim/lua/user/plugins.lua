@@ -43,6 +43,7 @@ packer.startup(function(use)
 	-- Temporarily disable until I figure out how to config this thing
 	-- use 'simrat39/rust-tools.nvim'
         use 'p00f/clangd_extensions.nvim'
+        use 'simrat39/symbols-outline.nvim'
 
         use { "sitiom/nvim-numbertoggle" }
 

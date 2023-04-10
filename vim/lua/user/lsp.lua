@@ -72,4 +72,7 @@ do_setup('rust_analyzer', {root_dir = lsp.util.root_pattern {"Cargo.toml"}})
 do_setup('cmake', {})
 
 require("clangd_extensions").setup()
+local so = require("symbols-outline")
+so.setup()
+vim.keymap.set('n', '<C-t>', so.toggle_outline, {})
 
