@@ -8,4 +8,4 @@ unzip -d /tmp/fonts /tmp/JetBrainsMono.zip
 sudo mv /tmp/fonts/*.ttf /usr/share/fonts
 fc-cache
 
-curl -sfL git.io/antibody | sh -s - -b /usr/local/bin
+curl -sfL git.io/antibody | sudo sh -s - -b /usr/local/bin
