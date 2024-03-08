@@ -2,7 +2,7 @@
 
 chsh -s $(which zsh)
 
-wget -P /tmp https://github.com/ryanoasis/nerd-fonts/releases/download/v2.2.2/JetBrainsMono.zip 
+wget -P /tmp https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/JetBrainsMono.zip 
 mkdir /tmp/fonts
 unzip -d /tmp/fonts /tmp/JetBrainsMono.zip
 sudo mv /tmp/fonts/*.ttf /usr/share/fonts
