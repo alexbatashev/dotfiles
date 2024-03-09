@@ -10,6 +10,11 @@ local options = {
 		html = { "prettier" },
 
 		sh = { "shfmt" },
+
+    rust = { "rustfmt" },
+    python = { "ruff_format" },
+    cpp = { "clang_format" },
+    bazel = { "buildifier" },
 	},
 
   -- adding same formatter for multiple filetypes can look too much work for some

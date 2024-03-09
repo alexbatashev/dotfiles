@@ -35,7 +35,7 @@ M.general = {
       "<cmd> Telescope buffers <CR>",
       "show open buffers",
       opts = { nowait = true }
-    }
+    },
 
   },
   v = {
