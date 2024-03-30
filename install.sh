@@ -39,6 +39,7 @@ ln -s ~/dotfiles/vim ~/.config/nvim
 ln -s ~/dotfiles/kitty ~/.config/kitty
 
 echo "source $HOME/dotfiles/zshrc" >> $HOME/.zshrc
+echo "source $HOME/dotfiles/fish/config.fish" >> $HOME/.config/fish/config.fish
 
 pip install cmake-language-server
 

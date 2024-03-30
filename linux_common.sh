@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-chsh -s $(which zsh)
+chsh -s $(which fish)
 
 wget -P /tmp https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/JetBrainsMono.zip 
 mkdir /tmp/fonts
@@ -8,7 +8,8 @@ unzip -d /tmp/fonts /tmp/JetBrainsMono.zip
 sudo mv /tmp/fonts/*.ttf /usr/share/fonts
 fc-cache
 
-curl -sfL git.io/antibody | sudo sh -s - -b /usr/local/bin
+# curl -sfL git.io/antibody | sudo sh -s - -b /usr/local/bin
+ln -s ~/dotfiles/fish_plugins $__fish_config_dir/fish_plugins
 
 curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
 

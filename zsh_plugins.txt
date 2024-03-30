@@ -1,5 +1,0 @@
-Aloxaf/fzf-tab
-bigH/git-fuzzy path:bin kind:path
-MichaelAquilina/zsh-auto-notify
-zsh-users/zsh-autosuggestions
-
