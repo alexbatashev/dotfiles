@@ -1,6 +1,7 @@
 [user]
 	name = Alexander Batashev
 	email = alexbatashev@outlook.com
+  signingKey = ~/.ssh/id_rsa.pub
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -48,4 +49,7 @@
 
 	# Find commits by commit message
     fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
-
+[gpg]
+  format = ssh
+[commit]
+  gpgsign = true
