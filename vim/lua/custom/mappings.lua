@@ -20,7 +20,7 @@ M.general = {
     },
 
     ["<C-g>"] = {
-      "<cmd> Telescope grep_string <CR>",
+      "<cmd> Telescope live_grep <CR>",
       "search in project",
       opts = { nowait = true }
     },
