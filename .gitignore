@@ -7,3 +7,5 @@ Code/*
 Code/User/*
 !/Code/User/snippets/
 !/Code/User/settings.json
+
+.DS_Store

@@ -1,12 +1,14 @@
 [user]
-	name = Alexander Batashev
-	email = alexbatashev@outlook.com
-  signingKey = ~/.ssh/id_rsa.pub
+name = Alexander Batashev
+email = alexbatashev@outlook.com
+signingKey = ~/.ssh/id_rsa.pub
+
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+clean = git-lfs clean -- %f
+smudge = git-lfs smudge -- %f
+process = git-lfs filter-process
+required = true
+
 [core]
 	autocrlf = input
 	preloadindex = true
@@ -20,37 +22,48 @@
 	# [default] space-before-tab: looks for spaces before tabs at the beginning of a line
   whitespace = space-before-tab,-indent-with-non-tab,trailing-space
   editor = "nvim"
+
 [diff "bin"]
-	# Use `hexdump` to diff binary files
-    textconv = hexdump -v -C
+# Use `hexdump` to diff binary files
+textconv = hexdump -v -C
+
 [merge]
-	# Include summaries of merged commits in newly created merge commit messages
-	log = true
-	renamelimit = 3129
+# Include summaries of merged commits in newly created merge commit messages
+log = true
+renamelimit = 3129
+
 [gc]
-	auto = 256
+auto = 256
+
 [alias]
-    # View abbreviated SHA, description, and history graph of the latest 20 commits
-    l = log --pretty=oneline -n 20 --graph --abbrev-commit
+# View abbreviated SHA, description, and history graph of the latest 20 commits
+l = log --pretty=oneline -n 20 --graph --abbrev-commit
 
-    # View the current working tree status using the short format
-    s = status -s
+# View the current working tree status using the short format
+s = status -s
 
-    # Credit an author on the latest commit
-    credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+# Credit an author on the latest commit
+credit = "!f() { git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
 
-    # List aliases
-    aliases = config --get-regexp alias
+# List aliases
+aliases = config --get-regexp alias
 
-    # List contributors with number of commits
-	contributors = shortlog --summary --numbered
+# List contributors with number of commits
+contributors = shortlog --summary --numbered
 
-    # Find commits by source code
-	fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
+# Find commits by source code
+fc = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
 
-	# Find commits by commit message
-    fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+# Find commits by commit message
+fm = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f"
+
+fpush = push --force-with-lease
+
 [gpg]
-  format = ssh
+format = ssh
+
 [commit]
-  gpgsign = true
+gpgsign = true
+
+[branch]
+sort = -committerdate

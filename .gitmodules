@@ -1,9 +1,6 @@
 [submodule "tmux/tpm"]
 	path = tmux/tpm
 	url = https://github.com/tmux-plugins/tpm
-[submodule "powerlevel10k"]
-	path = powerlevel10k
-	url = https://github.com/romkatv/powerlevel10k.git
 [submodule "zsh-autocomplete"]
 	path = zsh-autocomplete
 	url = https://github.com/marlonrichert/zsh-autocomplete.git
