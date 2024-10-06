@@ -3,5 +3,7 @@
 
 ---@type LazySpec
 return {
-  "Mofiqul/vscode.nvim",
+  "yamatsum/nvim-cursorline",
+  opts = {cursorword = { enable = true }},
+  "klen/nvim-test",
 }
