@@ -10,7 +10,7 @@ print(vim.inspect(env.openai_endpoint))
 
 return {
   "yetone/avante.nvim",
-  build = ":AvanteBuild",
+  build = "make",
   cmd = {
     "AvanteAsk",
     "AvanteBuild",
@@ -23,7 +23,7 @@ return {
   },
   event = "VeryLazy",
   lazy = false,
-  version = false, -- set this if you want to always pull the latest change
+  version = "0.0.8", -- set this if you want to always pull the latest change
   opts = {
     -- add any opts here
     provider = "openai",
