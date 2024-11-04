@@ -10,5 +10,5 @@ return {
   { import = "astrocommunity.recipes.vscode-icons" },
   { import = "astrocommunity.recipes.heirline-mode-text-statusline" },
   { import = "astrocommunity.recipes.heirline-vscode-winbar" },
-  { import = "astrocommunity.diagnostics.error-lens-nvim" },
+  { import = "astrocommunity.completion.codeium-nvim" },
 }
