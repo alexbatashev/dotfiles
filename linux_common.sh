@@ -8,8 +8,7 @@ unzip -d /tmp/fonts /tmp/JetBrainsMono.zip
 sudo mv /tmp/fonts/*.ttf /usr/share/fonts
 fc-cache
 
-# curl -sfL git.io/antibody | sudo sh -s - -b /usr/local/bin
-ln -s ~/dotfiles/fish_plugins $__fish_config_dir/fish_plugins
+ln -s ~/dotfiles/fish_plugins $HOME/.config/fish/fish_plugins
 
 curl -L https://sw.kovidgoyal.net/kitty/installer.sh | sh /dev/stdin
 

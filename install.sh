@@ -2,6 +2,8 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+mkdir -p $HOME/.local/bin
+
 if [ -f /etc/os-release ]; then
   export DISTRO=$(awk -F= '/^NAME/{print $2}' /etc/os-release | sed 's/\"//g')
   echo "Distro is $DISTRO"
@@ -28,10 +30,6 @@ else
   exit
   # TODO run for SUSE
   $DIR/tumbleweed.sh
-fi
-
-if [[ "$OSTYPE" != "darwin"* ]]; then
-  sudo bash -c "curl -sfL git.io/antibody | sh -s - -b /usr/local/bin"
 fi
 
 ln -s ~/dotfiles/vim ~/.config/nvim
