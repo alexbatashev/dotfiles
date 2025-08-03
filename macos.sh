@@ -15,6 +15,7 @@ brew install nodejs
 brew install wget
 brew install cmake ninja
 brew install antibody
+brew install stow
 
 wget -O /tmp/jetbrainsmono.zip https://github.com/ryanoasis/nerd-fonts/releases/download/v2.2.2/JetBrainsMono.zip
 unzip -d /tmp /tmp/jetbrainsmono.zip
