@@ -5,7 +5,7 @@ sudo apt install -yqq curl fish zsh neovim build-essential \
                       cmake ninja-build wget linux-tools-generic \
                       tmux eza bat fd-find clang lldb gdb nodejs \
             		      tre-command git-extras python3 python-is-python3 \
-                      python3-pip fzf python3-venv gettext ripgrep zoxide
+                      python3-pip fzf python3-venv gettext ripgrep zoxide stow
 
 sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
 

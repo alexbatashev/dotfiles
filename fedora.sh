@@ -12,6 +12,7 @@ sudo dnf install -y fd-find
 sudo dnf install -y fzf
 sudo dnf install -y clang lldb gdb
 sudo dnf install -y tmux
+sudo dnf install -y stow
 
 sudo dnf install dnf-plugins-core
 

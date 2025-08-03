@@ -32,14 +32,12 @@ else
   $DIR/tumbleweed.sh
 fi
 
-ln -s ~/dotfiles/vim ~/.config/nvim
-
-ln -s ~/dotfiles/kitty ~/.config/kitty
+stow nvim
+stow kitty
+stow hyprland
 
 echo "source $HOME/dotfiles/zshrc" >> $HOME/.zshrc
 echo "source $HOME/dotfiles/fish/config.fish" >> $HOME/.config/fish/config.fish
-
-pip install cmake-language-server
 
 echo "[include]" >> ~/.gitconfig
 echo "  path = ~/dotfiles/gitconfig" >> ~/.gitconfig
