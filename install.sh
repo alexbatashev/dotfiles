@@ -37,6 +37,7 @@ stow kitty
 stow hyprland
 stow waybar 
 stow wofi 
+stow helix
 
 echo "source $HOME/dotfiles/zshrc" >> $HOME/.zshrc
 echo "source $HOME/dotfiles/fish/config.fish" >> $HOME/.config/fish/config.fish
