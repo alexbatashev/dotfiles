@@ -7,7 +7,7 @@
 
     "position": "top",
 
-    "height": 12,
+    "height": 8,
 
     "margin-left": 10,
     "margin-bottom": 0,
@@ -221,7 +221,7 @@
     },
 
     "clock#date": {
-        "format": "󰥔  {:%H:%M \n %e %b}",
+        "format": "󰥔  {:%H:%M  %e %b}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
         "today-format": "<b>{}</b>"
     },
