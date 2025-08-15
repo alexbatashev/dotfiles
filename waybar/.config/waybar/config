@@ -16,18 +16,16 @@
     "spacing": 5, // Gaps between modules (4px)
 
     "modules-left": [
-        //"custom/rofi",
+        // "custom/rofi",
         "hyprland/workspaces",
         //"hyprland/submap",
-        "temperature",
         //"idle_inhibitor",
         //"mpd"
         "custom/spotify"
     ],
     "modules-center": [
         //"hyprland/window"
-        "clock#date",
-        "custom/weather"
+        "clock#date"
         //"custom/gammastep"
     ],
     "modules-right": [
@@ -39,6 +37,7 @@
         //"pulseaudio",
         "wireplumber",
         "custom/screenshot_t",
+        "hyprland/language",
         "tray",
         "custom/power"
     ],
@@ -291,11 +290,11 @@
         "exec": "$HOME/.scripts/title"
     },
 
-    /*"custom/keyboard": {
+    "custom/keyboard": {
         "format": " {}",
         "interval": 1,
         "exec": "$HOME/.config/waybar/get_kbdlayout.sh"
-    },*/
+    },
 
     "hyprland/workspaces": {
         "all-outputs": true,
@@ -367,6 +366,11 @@
             "car": " ",
             "default": [" ", " ", " "]
         },
+    },
+
+    "hyprland/language": {
+        "format-ru": "RU",
+        "format-en": "EN"
     },
 
     "tray": {

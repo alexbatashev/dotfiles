@@ -32,8 +32,8 @@ window#waybar.hidden {
 }
 
 #workspaces button {
-    padding: 3px 5px;  /* Adjusted padding to reduce height */
-    margin: 3px 5px;    /* Reduced margin slightly */
+    padding: 1px 5px;  /* Adjusted padding to reduce height */
+    margin: 2px 5px;    /* Reduced margin slightly */
     border-radius: 6px;
     color: @foreground;
     background-color: #111827;
@@ -298,10 +298,12 @@ label:focus {
 }
 
 #language {
-    background: #00b093;
-    color: #740864;
-    padding: 0 0px;
-    margin: 0 5px;
+    font-family: "JetBrainsMono Nerd Font Mono";
+    color: @foreground;
+    background-color: #111827;
+    padding: 3px 5px;  /* Adjusted padding to reduce height */
+    margin: 3px 5px;    /* Reduced margin slightly */
+    border-radius: 6px;
     min-width: 16px;
 }
 
