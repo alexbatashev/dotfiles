@@ -9,7 +9,6 @@
 {
   "context_servers": {
     "mcp-server-context7": {
-      "source": "extension",
       "enabled": true,
       "settings": {
         "default_minimum_tokens": "10000"
@@ -18,27 +17,27 @@
   },
   "agent": {
     "default_model": {
-      "provider": "LiteLLM",
-      "model": "gemini-2-5-pro"
+      "provider": "Lite LLM",
+      "model": "claude-4-sonnet"
     },
     "play_sound_when_agent_done": true,
     "always_allow_tool_actions": true
   },
   "language_models": {
     "openai_compatible": {
-      "LiteLLM": {
+      "Lite LLM": {
         "api_url": "https://llm.ai.batashev.me/v1",
         "available_models": [
           {
             "name": "gpt-5",
-            "display_name": null,
+            "display_name": "OpenAI GPT 5",
             "max_tokens": 200000,
             "max_output_tokens": 32000,
             "max_completion_tokens": 200000
           },
           {
             "name": "gpt-oss-120b",
-            "display_name": null,
+            "display_name": "OpenAI GPT-OSS 120B",
             "max_tokens": 128000,
             "max_output_tokens": 32000,
             "max_completion_tokens": 128000
@@ -52,21 +51,28 @@
           },
           {
             "name": "claude-4-sonnet",
-            "display_name": null,
+            "display_name": "Claude 4 Sonnet",
             "max_tokens": 200000,
             "max_output_tokens": 32000,
             "max_completion_tokens": 200000
           },
           {
-            "name": "gemini-2-5-pro",
-            "display_name": null,
+            "name": "gemini-2.5-pro",
+            "display_name": "Gemini 2.5 Pro",
+            "max_tokens": 1000000,
+            "max_output_tokens": 60000,
+            "max_completion_tokens": 1000000
+          },
+          {
+            "name": "gemini-2.5-flash",
+            "display_name": "Gemini 2.5 Flash",
             "max_tokens": 1000000,
             "max_output_tokens": 60000,
             "max_completion_tokens": 1000000
           },
           {
             "name": "deepseek-r1",
-            "display_name": null,
+            "display_name": "DeepSeek R1",
             "max_tokens": 128000,
             "max_output_tokens": 128000,
             "max_completion_tokens": 128000
@@ -83,5 +89,6 @@
     "light": "One Light",
     "dark": "Fleet Dark"
   },
-  "vim_mode": true
+  "vim_mode": true,
+  "helix_mode": true
 }
