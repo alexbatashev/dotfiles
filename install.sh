@@ -1,49 +1,49 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
+# Bootstrap dotfiles with Nix + home-manager.
+#
+# Usage:
+#   ./install.sh              # auto-detects OS, uses alex@linux or alex@darwin
+#   ./install.sh alex@linux   # explicit profile
+set -euo pipefail
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROFILE="${1:-}"
 
-mkdir -p $HOME/.local/bin
-
-if [ -f /etc/os-release ]; then
-  export DISTRO=$(awk -F= '/^NAME/{print $2}' /etc/os-release | sed 's/\"//g')
-  echo "Distro is $DISTRO"
+# ── 1. Detect profile ────────────────────────────────────────────────────────
+if [[ -z "$PROFILE" ]]; then
+  if [[ "$(uname)" == "Darwin" ]]; then
+    PROFILE="alex@darwin"
+  else
+    PROFILE="alex@linux"
+  fi
 fi
+echo "==> Using profile: $PROFILE"
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  echo "Detected macOS. Running macos.sh"
-  read -p "Press any key to resume..."
-  $DIR/macos.sh
-elif [ -f /etc/redhat-release ]; then
-  echo "Detected RedHat. Running fedora.sh"
-  read -p "Press any key to resume..."
-  $DIR/fedora.sh
-elif [ -f /etc/arch-release ]; then
-  echo "Detected Arch variation. Running arch.sh"
-  read -p "Press any key to resume..."
-  $DIR/arch.sh
-elif [[ "$DISTRO" == "Ubuntu" ]]; then
-  echo "Detected Ubuntu. Running ubuntu.sh"
-  read -p "Press any key to resume..."
-  $DIR/ubuntu.sh
+# ── 2. Install Nix (if missing) ──────────────────────────────────────────────
+if ! command -v nix &>/dev/null; then
+  echo "==> Installing Nix via Determinate Nix Installer..."
+  curl --proto '=https' --tlsv1.2 -sSf -L \
+    https://install.determinate.systems/nix | sh -s -- install
+  # Source nix into current shell
+  # shellcheck disable=SC1091
+  source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 else
-  echo "Unsupported distro. Exiting..."
-  exit
-  # TODO run for SUSE
-  $DIR/tumbleweed.sh
+  echo "==> Nix already installed: $(nix --version)"
 fi
 
-stow nvim
-stow kitty
-stow hyprland
-stow waybar 
-stow wofi 
-stow helix
-stow zed
+# ── 3. Warn if dotfiles are not at ~/dotfiles ────────────────────────────────
+if [[ "$DOTFILES_DIR" != "$HOME/dotfiles" ]]; then
+  echo "WARNING: dotfiles found at $DOTFILES_DIR, not ~/dotfiles."
+  echo "         Out-of-store symlinks in neovim/zed/hyprland modules"
+  echo "         assume ~/dotfiles. Consider re-cloning there."
+fi
 
-echo "source $HOME/dotfiles/zshrc" >> $HOME/.zshrc
-echo "source $HOME/dotfiles/fish/config.fish" >> $HOME/.config/fish/config.fish
+# ── 4. Apply home-manager configuration ─────────────────────────────────────
+echo "==> Applying home-manager configuration for $PROFILE..."
+nix run home-manager -- switch --flake "${DOTFILES_DIR}#${PROFILE}"
 
-echo "[include]" >> ~/.gitconfig
-echo "  path = ~/dotfiles/gitconfig" >> ~/.gitconfig
-
-echo "Run :PackerSync for full experience"
+echo ""
+echo "Done. Open a new shell to pick up fish and all installed tools."
+echo ""
+echo "  Rebuild:        nix run home-manager -- switch --flake ~/dotfiles#${PROFILE}"
+echo "  Update inputs:  nix flake update ~/dotfiles"
