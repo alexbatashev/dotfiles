@@ -5,7 +5,7 @@
     defaultEditor = false;  # helix is the default; set to true to prefer nvim
     vimAlias      = false;  # "vim" alias handled by fish shellAliases
     viAlias       = false;
-    package       = pkgs.neovim;
+    package       = pkgs.neovim-unwrapped;
   };
 
   # Symlink the existing AstroNvim config directory directly (out-of-store)
