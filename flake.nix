@@ -23,8 +23,9 @@
       #   nix run home-manager -- switch --flake .#alex@linux
       #   nix run home-manager -- switch --flake .#alex@darwin
       homeConfigurations = {
-        "alex@linux"  = mkHome "x86_64-linux"    [ ./home/profiles/linux-desktop.nix ];
-        "alex@darwin" = mkHome "aarch64-darwin"  [ ./home/profiles/darwin.nix ];
+        "alex@linux"         = mkHome "x86_64-linux"   [ ./home/profiles/linux-desktop.nix ];
+        "alex@linux-aarch64" = mkHome "aarch64-linux"  [ ./home/profiles/linux-desktop.nix ];
+        "alex@darwin"        = mkHome "aarch64-darwin" [ ./home/profiles/darwin.nix ];
       };
     };
 }

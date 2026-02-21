@@ -14,7 +14,10 @@ if [[ -z "$PROFILE" ]]; then
   if [[ "$(uname)" == "Darwin" ]]; then
     PROFILE="alex@darwin"
   else
-    PROFILE="alex@linux"
+    case "$(uname -m)" in
+      aarch64|arm64) PROFILE="alex@linux-aarch64" ;;
+      *)             PROFILE="alex@linux" ;;
+    esac
   fi
 fi
 echo "==> Using profile: $PROFILE"
