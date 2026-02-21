@@ -8,8 +8,8 @@
     hyprpicker     # colour picker
     hyprshot       # screenshot helper (alternative to grim+slurp)
 
-    # Polkit agent
-    polkit-kde-agent
+    # Polkit agent (KDE6)
+    kdePackages.polkit-kde-agent-1
 
     # Browser
     brave
