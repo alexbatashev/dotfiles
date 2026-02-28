@@ -11,6 +11,7 @@
 
     settings = {
       theme = "Jellybeans";
+      font-size = 20;
     };
   };
 }
