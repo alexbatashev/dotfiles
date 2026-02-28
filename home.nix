@@ -22,6 +22,8 @@
     fzf
     zoxide
     btop
+    yazi
+    lazygit
 
     git-lfs
     gh
@@ -67,6 +69,7 @@
     ./modules/ghostty.nix
     ./modules/helix.nix
     ./modules/zed.nix
+    ./modules/tmux.nix
     ./modules/hypr/default.nix
     ./modules/waybar/default.nix
   ];

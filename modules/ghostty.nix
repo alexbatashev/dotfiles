@@ -11,8 +11,12 @@
     enableZshIntegration = true;
 
     settings = {
-      theme = "Jellybeans";
+      theme = "JetBrains Darcula";
       font-size = 20;
+      shell-integration-features = "true";
+      keybind = [
+        "global:cmd+backquote=toggle_quick_terminal"
+      ];
     };
   };
 }

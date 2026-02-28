@@ -1,9 +1,9 @@
-{pkgs, lib, ...}:
+{ pkgs, lib, ... }:
 {
   programs.helix = {
     enable = true;
     settings = {
-      theme = "jellybeans_fixed";
+      theme = "darcula_fixed";
       editor.cursor-shape = {
         normal = "block";
         insert = "bar";
@@ -23,9 +23,11 @@
     ];
 
     themes = {
-      jellybeans_fixed = {
-        "inherits" = "jellybeans";
+      darcula_fixed = {
+        "inherits" = "darcula";
         "ui.background" = { };
+        "ui.gutter" = { };
+        "ui.linenr" = { };
       };
     };
   };

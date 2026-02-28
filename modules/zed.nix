@@ -10,12 +10,18 @@ in
       "nix"
       "toml"
       "rust"
-      "jellybeans-vim"
+      "darcula-dark"
+      "git-firefly"
+      "swift"
+      "verilog"
+      "scala"
+      "toml"
+      "latex"
     ];
     userSettings = {
       theme = {
         mode = "system";
-        dark = "Jellybeans";
+        dark = "Darcula Dark";
         light = "One Light";
       };
       hour_format = "hour24";
