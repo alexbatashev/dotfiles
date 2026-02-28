@@ -1,4 +1,4 @@
-{config, pkgs, username, ...}:
+{config, pkgs, username, lib, ...}:
 {
   home.username = username;
   home.homeDirectory = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
@@ -38,6 +38,9 @@
 
   imports = [
     ./modules/fish.nix
+    ./modules/git.nix
     ./modules/ghostty.nix
+    ./modules/hypr/default.nix
+    ./modules/waybar/default.nix
   ];
 }

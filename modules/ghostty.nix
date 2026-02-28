@@ -1,7 +1,9 @@
 {pkgs, config, ...}: {
   programs.ghostty = {
     enable = true;
-    package = if pkgs.stdenv.isDarwin then pkgs.ghostty-bin else config.lib.nixGL.wrap pkgs.ghostty;
+    package = if pkgs.stdenv.isDarwin then pkgs.ghostty-bin else null;
+
+    systemd.enable = false;
 
     enableBashIntegration = true;
     enableFishIntegration = true;
