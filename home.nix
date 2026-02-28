@@ -35,4 +35,9 @@
     "$HOME/dotfiles/bin"
     "$HOME/.local/bin"
   ];
+
+  imports = [
+    ./modules/fish.nix
+    ./modules/ghostty.nix
+  ];
 }
