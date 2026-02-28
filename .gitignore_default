@@ -1,3 +1,4 @@
 .lvimrc
 compile_commands.json
 .DS_Store
+.claude/*.local.json

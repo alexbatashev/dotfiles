@@ -19,6 +19,8 @@
     };
 
     zed.url = "github:zed-industries/zed";
+    codex-cli-nix.url = "github:sadjow/codex-cli-nix";
+    claude-code.url = "github:sadjow/claude-code-nix";
   };
 
   nixConfig = {
@@ -38,6 +40,7 @@
       darwin,
       home-manager,
       nixpkgs,
+      claude-code,
       ...
     }@inputs:
     let
@@ -60,7 +63,7 @@
             ./platform/darwin.nix
             inputs.home-manager.darwinModules.home-manager
             {
-              # nixpkgs = nixpkgsConfig;
+              nixpkgs.overlays = [ claude-code.overlays.default ];
 
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
@@ -85,6 +88,9 @@
             inherit inputs outputs username;
           };
           modules = [
+            {
+              nixpkgs.overlays = [ claude-code.overlays.default ];
+            }
             ./home.nix
           ];
         };

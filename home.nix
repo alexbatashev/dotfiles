@@ -1,8 +1,8 @@
 {
-  config,
   pkgs,
   username,
   lib,
+  inputs,
   ...
 }:
 {
@@ -36,6 +36,10 @@
 
     nil
     nixd
+
+    inputs.codex-cli-nix.packages.${pkgs.system}.default
+    claude-code
+    opencode
 
     nerd-fonts.jetbrains-mono
     fira
