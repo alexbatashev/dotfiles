@@ -38,11 +38,30 @@
         whitespace = "space-before-tab,-indent-with-non-tab,trailing-space";
         editor = "hx";
       };
-      diff."bin".textconv = "hexdump -v -C";
+
+      diff = {
+        algorithm = "histogram";
+        colorMoved = "plain";
+        mnemonicPrefix = "true";
+        "bin".textconv = "hexdump -v -C";
+      };
+
+      commit.verbose = true;
+      column.ui = "auto";
+
+      rerere = {
+        enabled = true;
+        autoupdate = true;
+      };
+
       merge = {
         log = true;
         renamelimit = 3129;
       };
+
+      pull.rebase = true;
+      push.autoSetupRemote = true;
+
       gc.auto = 256;
       gpg.format = "ssh";
       branch.sort = "-committerdate";

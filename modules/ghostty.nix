@@ -17,6 +17,7 @@
       keybind = [
         "global:cmd+backquote=toggle_quick_terminal"
       ];
+      async-backend = "epoll";
     };
   };
 }

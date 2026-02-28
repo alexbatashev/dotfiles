@@ -36,6 +36,8 @@
 
     graphviz
 
+    localsend
+
     nil
     nixd
 
@@ -70,6 +72,7 @@
     ./modules/helix.nix
     ./modules/zed.nix
     ./modules/tmux.nix
+    ./modules/obsidian.nix
     ./modules/hypr/default.nix
     ./modules/waybar/default.nix
   ];
