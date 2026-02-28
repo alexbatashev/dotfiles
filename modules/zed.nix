@@ -1,7 +1,11 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
+let
+  zedPackages = inputs.zed.packages.${pkgs.stdenv.hostPlatform.system};
+in
 {
   programs.zed-editor = {
     enable = true;
+    package = if zedPackages ? default then zedPackages.default else zedPackages.zed-editor;
     extensions = [
       "nix"
       "toml"

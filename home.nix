@@ -34,6 +34,9 @@
 
     graphviz
 
+    nil
+    nixd
+
     nerd-fonts.jetbrains-mono
     fira
   ];
