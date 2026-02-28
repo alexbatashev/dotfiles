@@ -1,9 +1,0 @@
-[submodule "tmux/tpm"]
-	path = tmux/tpm
-	url = https://github.com/tmux-plugins/tpm
-[submodule "zsh-autocomplete"]
-	path = zsh-autocomplete
-	url = https://github.com/marlonrichert/zsh-autocomplete.git
-[submodule "nord-gnome-terminal"]
-	path = nord-gnome-terminal
-	url = https://github.com/arcticicestudio/nord-gnome-terminal.git
