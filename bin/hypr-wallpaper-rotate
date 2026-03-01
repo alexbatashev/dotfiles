@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+interval_seconds="${1:-600}"
+lock_file="${XDG_RUNTIME_DIR:-/tmp}/hypr-wallpaper-rotate.lock"
+
+if ! [[ "$interval_seconds" =~ ^[0-9]+$ ]] || [ "$interval_seconds" -lt 5 ]; then
+  interval_seconds=600
+fi
+
+# Ensure only one rotator instance runs at a time.
+exec 9>"$lock_file"
+flock -n 9 || exit 0
+
+while true; do
+  "$HOME/dotfiles/bin/hypr-wallpaper-random" || true
+  sleep "$interval_seconds"
+done
