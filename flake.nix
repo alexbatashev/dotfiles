@@ -52,7 +52,7 @@
       };
 
       mkDarwin =
-        username: extraModules:
+        username: extraModules: extraHome:
         darwin.lib.darwinSystem {
           system = "aarch64-darwin";
           specialArgs = {
@@ -71,7 +71,7 @@
                 inherit inputs outputs username;
               };
               home-manager.users.${username} = {
-                imports = [ ./home.nix ];
+                imports = [ ./home.nix ] ++ extraHome;
               };
             }
           ]
@@ -103,10 +103,7 @@
     in
     {
       darwinConfigurations = {
-        "alex@macbook" = mkDarwin "alex" [
-          ./profiles/macbook.nix
-          ./profiles/alex.nix
-        ];
+        "alex@macbook" = mkDarwin "alex" [ ./profiles/macbook.nix ] [ ./profiles/alex.nix ];
       };
 
       homeConfigurations = {
