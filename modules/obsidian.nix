@@ -2,6 +2,7 @@
 {
   programs.obsidian = {
     enable = true;
+    package = pkgs.obsidian.override { electron = pkgs.electron_39; };
     vaults."Obsidian Notes" = {
       target = "Obsidian Notes";
     };
