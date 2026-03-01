@@ -12,11 +12,6 @@
     lfs.enable = true;
 
     settings = {
-      user = {
-        name = "Alexander Batashev";
-        email = "alex@batashev.me";
-      };
-
       alias = {
         # View abbreviated SHA, description, and history graph of the latest 20 commits
         l = "log --pretty=oneline -n 20 --graph --abbrev-commit";

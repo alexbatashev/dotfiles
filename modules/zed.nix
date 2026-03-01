@@ -1,11 +1,22 @@
-{ pkgs, inputs, ... }:
+{
+  pkgs,
+  inputs,
+  config,
+  ...
+}:
 let
-  zedPackages = inputs.zed.packages.${pkgs.stdenv.hostPlatform.system};
+  # Upstream Zed flake can force large source builds on Linux when cache coverage
+  # is incomplete. Prefer nixpkgs' cached package there.
+  zedPackage =
+    if pkgs.stdenv.isDarwin then
+      inputs.zed.packages.${pkgs.stdenv.hostPlatform.system}.default
+    else
+      pkgs.zed-editor;
 in
 {
   programs.zed-editor = {
     enable = true;
-    package = if zedPackages ? default then zedPackages.default else zedPackages.zed-editor;
+    package = zedPackage;
     extensions = [
       "nix"
       "toml"

@@ -21,6 +21,7 @@
     zed.url = "github:zed-industries/zed";
     codex-cli-nix.url = "github:sadjow/codex-cli-nix";
     claude-code.url = "github:sadjow/claude-code-nix";
+    nixgl.url = "github:nix-community/nixGL";
   };
 
   nixConfig = {
@@ -51,7 +52,7 @@
       };
 
       mkDarwin =
-        username:
+        username: extraModules:
         darwin.lib.darwinSystem {
           system = "aarch64-darwin";
           specialArgs = {
@@ -60,7 +61,6 @@
           };
           modules = [
             { nixpkgs.config = nixpkgsConfig; }
-            ./platform/darwin.nix
             inputs.home-manager.darwinModules.home-manager
             {
               nixpkgs.overlays = [ claude-code.overlays.default ];
@@ -74,36 +74,49 @@
                 imports = [ ./home.nix ];
               };
             }
-          ];
+          ]
+          ++ extraModules;
         };
 
       mkHome =
-        system: username:
+        system: username: extraModules:
         home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
             inherit system;
             config = nixpkgsConfig;
           };
           extraSpecialArgs = {
-            inherit inputs outputs username;
+            inherit
+              inputs
+              outputs
+              username
+              ;
           };
           modules = [
             {
               nixpkgs.overlays = [ claude-code.overlays.default ];
             }
             ./home.nix
-          ];
+          ]
+          ++ extraModules;
         };
     in
     {
       darwinConfigurations = {
-        "alex" = mkDarwin "alex";
+        "alex@macbook" = mkDarwin "alex" [
+          ./profiles/macbook.nix
+          ./profiles/alex.nix
+        ];
       };
 
       homeConfigurations = {
-        "alex@darwin" = mkHome "aarch64-darwin" "alex";
-        "alex@linux" = mkHome "x86_64-linux" "alex";
-        "alex@linux-arm" = mkHome "aarch64-linux" "alex";
+        "alex@desktop" = mkHome "x86_64-linux" "alex" [
+          ./profiles/desktop.nix
+          ./profiles/alex.nix
+        ];
+        "alex@orion" = mkHome "aarch64-linux" "alex" [
+          ./profiles/alex.nix
+        ];
       };
     };
 }

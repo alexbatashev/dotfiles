@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+profile_file="${repo_root}/profiles/desktop.nix"
+
+if [[ ! -f "${profile_file}" ]]; then
+  echo "Error: profile file not found: ${profile_file}" >&2
+  exit 1
+fi
+
+if ! command -v nvidia-smi >/dev/null 2>&1; then
+  echo "Error: nvidia-smi is not available in PATH." >&2
+  exit 1
+fi
+
+if ! command -v nix >/dev/null 2>&1; then
+  echo "Error: nix is not available in PATH." >&2
+  exit 1
+fi
+
+driver_version="$(nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -n1 | tr -d '[:space:]')"
+if [[ -z "${driver_version}" ]]; then
+  echo "Error: failed to read NVIDIA driver version from nvidia-smi." >&2
+  exit 1
+fi
+
+arch="$(uname -m)"
+case "${arch}" in
+  x86_64)
+    nvidia_arch="x86_64"
+    ;;
+  aarch64 | arm64)
+    nvidia_arch="aarch64"
+    ;;
+  *)
+    echo "Error: unsupported architecture '${arch}'." >&2
+    exit 1
+    ;;
+esac
+
+url="https://download.nvidia.com/XFree86/Linux-${nvidia_arch}/${driver_version}/NVIDIA-Linux-${nvidia_arch}-${driver_version}.run"
+echo "Prefetching NVIDIA driver from:"
+echo "  ${url}"
+
+hash="$(nix store prefetch-file "${url}" | tail -n1 | tr -d '\r')"
+if [[ ! "${hash}" =~ ^sha256- ]]; then
+  echo "Error: unexpected hash output from 'nix store prefetch-file': ${hash}" >&2
+  exit 1
+fi
+
+backup_file="${profile_file}.bak.$(date +%Y%m%d%H%M%S)"
+cp "${profile_file}" "${backup_file}"
+echo "Backup written to: ${backup_file}"
+
+NEW_VERSION="${driver_version}" NEW_HASH="${hash}" perl -0777 -i -pe '
+  s#(targets\.genericLinux\.gpu\.nvidia\s*=\s*\{\s*enable\s*=\s*true;\s*version\s*=\s*")[^"]+(";\s*sha256\s*=\s*")[^"]+(";\s*\};)#$1$ENV{NEW_VERSION}$2$ENV{NEW_HASH}$3#s
+    or die "Could not find targets.genericLinux.gpu.nvidia block to update\n";
+' "${profile_file}"
+
+echo "Updated ${profile_file}:"
+sed -n '/targets\.genericLinux\.gpu\.nvidia = {/,/};/p' "${profile_file}"
