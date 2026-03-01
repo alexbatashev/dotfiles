@@ -43,9 +43,18 @@ url="https://download.nvidia.com/XFree86/Linux-${nvidia_arch}/${driver_version}/
 echo "Prefetching NVIDIA driver from:"
 echo "  ${url}"
 
-hash="$(nix store prefetch-file "${url}" | tail -n1 | tr -d '\r')"
+prefetch_output="$(nix store prefetch-file --json "${url}" 2>&1 || true)"
+echo "${prefetch_output}"
+
+# Prefer parsing JSON output from newer nix.
+hash="$(printf '%s\n' "${prefetch_output}" | sed -n 's/.*"hash"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | tail -n1)"
+# Fallback for non-JSON or mixed output.
+if [[ -z "${hash}" ]]; then
+  hash="$(printf '%s\n' "${prefetch_output}" | rg -o 'sha256-[A-Za-z0-9+/=]+' | tail -n1 || true)"
+fi
+
 if [[ ! "${hash}" =~ ^sha256- ]]; then
-  echo "Error: unexpected hash output from 'nix store prefetch-file': ${hash}" >&2
+  echo "Error: could not parse sha256 hash from 'nix store prefetch-file' output." >&2
   exit 1
 fi
 
