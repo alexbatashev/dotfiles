@@ -33,6 +33,9 @@
     interactiveShellInit = ''
       fish_add_path $HOME/.local/bin
       fish_add_path $HOME/dotfiles/bin
+      if test -f $HOME/.local/share/swiftly/env.fish
+        source $HOME/.local/share/swiftly/env.fish
+      end
     '';
   };
 
