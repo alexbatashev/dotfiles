@@ -1,22 +1,11 @@
 {
   pkgs,
-  inputs,
-  config,
   ...
 }:
-let
-  # Upstream Zed flake can force large source builds on Linux when cache coverage
-  # is incomplete. Prefer nixpkgs' cached package there.
-  zedPackage =
-    if pkgs.stdenv.isDarwin then
-      inputs.zed.packages.${pkgs.stdenv.hostPlatform.system}.default
-    else
-      pkgs.zed-editor;
-in
 {
   programs.zed-editor = {
     enable = true;
-    package = zedPackage;
+    package = pkgs.zed-editor;
     extensions = [
       "nix"
       "toml"

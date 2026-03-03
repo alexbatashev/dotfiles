@@ -103,7 +103,10 @@
     in
     {
       darwinConfigurations = {
-        "alex@macbook" = mkDarwin "alex" [ ./profiles/macbook.nix ] [ ./profiles/alex.nix ];
+        "alex@macbook" =
+          mkDarwin "alex"
+            [ ./profiles/macbook.nix ]
+            [ ./profiles/alex.nix ./profiles/macos.nix ];
       };
 
       homeConfigurations = {
