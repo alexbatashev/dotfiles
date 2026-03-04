@@ -30,6 +30,7 @@
 
     cmake
     ninja
+    bazelisk
 
     nodejs
     python3
