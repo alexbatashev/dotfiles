@@ -30,7 +30,11 @@
 
     cmake
     ninja
+    pnpm
     bazelisk
+    (pkgs.writeShellScriptBin "bazel" ''
+      exec ${lib.getExe pkgs.bazelisk} "$@"
+    '')
 
     nodejs
     python3
