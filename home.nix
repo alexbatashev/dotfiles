@@ -24,6 +24,7 @@
     btop
     yazi
     lazygit
+    bloaty
 
     git-lfs
     gh
