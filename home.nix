@@ -31,6 +31,7 @@
     cmake
     ninja
     pnpm
+    starpls
     bazelisk
     (pkgs.writeShellScriptBin "bazel" ''
       exec ${lib.getExe pkgs.bazelisk} "$@"

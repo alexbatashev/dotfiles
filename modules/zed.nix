@@ -17,6 +17,11 @@
       "scala"
       "toml"
       "latex"
+      "proto"
+      "dockerfile"
+      "make"
+      "kotlin"
+      "starlark"
     ];
     userSettings = {
       theme = {
