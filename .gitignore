@@ -9,3 +9,6 @@ Code/User/*
 !/Code/User/settings.json
 
 .DS_Store
+
+profiles/work/*
+!profiles/work/.gitignore
