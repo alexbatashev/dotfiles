@@ -43,17 +43,12 @@
 
     graphviz
 
-    localsend
-
     nil
     nixd
 
     inputs.codex-cli-nix.packages.${pkgs.system}.default
     claude-code
     opencode
-
-    nerd-fonts.jetbrains-mono
-    fira
   ];
 
   programs.home-manager.enable = true;
@@ -77,8 +72,6 @@
     ./modules/git.nix
     ./modules/ghostty.nix
     ./modules/helix.nix
-    ./modules/zed.nix
     ./modules/tmux.nix
-    ./modules/obsidian.nix
   ];
 }

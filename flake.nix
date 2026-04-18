@@ -106,15 +106,19 @@
         "alex@macbook" =
           mkDarwin "alex"
             [ ./profiles/macbook.nix ]
-            [ ./profiles/alex.nix ./profiles/macos.nix ];
+            [ ./profiles/alex.nix ./profiles/gui.nix ./profiles/macos.nix ];
       };
 
       homeConfigurations = {
         "alex@desktop" = mkHome "x86_64-linux" "alex" [
+          ./profiles/gui.nix
           ./profiles/desktop.nix
           ./profiles/alex.nix
         ];
         "alex@orion" = mkHome "aarch64-linux" "alex" [
+          ./profiles/alex.nix
+        ];
+        "alex@nas" = mkHome "x86_64-linux" "alex" [
           ./profiles/alex.nix
         ];
       };
