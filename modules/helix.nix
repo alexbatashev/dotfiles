@@ -2,23 +2,60 @@
 {
   programs.helix = {
     enable = true;
+    extraPackages = with pkgs; [
+      nil
+      nixd
+      rust-analyzer
+    ];
     settings = {
       theme = "darcula_fixed";
-      editor.cursor-shape = {
-        normal = "block";
-        insert = "bar";
-        select = "underline";
+      editor = {
+        cursorline = true;
+        completion-replace = true;
+        indent-guides = {
+          render = true;
+          skip-levels = 1;
+        };
+        cursor-shape = {
+          normal = "block";
+          insert = "bar";
+          select = "underline";
+        };
+
+        inline-diagnostics = {
+          cursor-line = "warning";
+          other-lines = "error";
+        };
+
+        statusline = {
+          right = [
+            "diagnostics"
+            "spacer"
+            "file-type"
+            "file-encoding"
+            "file-line-ending"
+            "spacer"
+            "selections"
+            "register"
+            "spacer"
+            "position"
+            "position-percentage"
+            "total-line-numbers"
+          ];
+        };
       };
     };
     languages.language = [
       {
         name = "nix";
         auto-format = true;
-        formatter.command = lib.getExe pkgs.nixfmt-rfc-style;
+        formatter.command = lib.getExe pkgs.nixfmt;
       }
       {
         name = "rust";
         auto-format = true;
+        language-servers = [ "rust-analyzer" ];
+        formatter.command = "rustfmt";
       }
     ];
 
