@@ -29,6 +29,8 @@
     git-lfs
     gh
 
+    mermaid-cli
+
     cmake
     ninja
     pnpm
