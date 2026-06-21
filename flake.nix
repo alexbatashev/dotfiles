@@ -116,6 +116,7 @@
           ./profiles/alex.nix
         ];
         "alex@orion" = mkHome "aarch64-linux" "alex" [
+          ./profiles/orion.nix
           ./profiles/alex.nix
         ];
         "alex@nas" = mkHome "x86_64-linux" "alex" [
