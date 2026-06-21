@@ -132,7 +132,11 @@ in
         );
 
         environment = [
-          "PATH=${servePath}:${config.home.profileDirectory}/bin"
+          # Nix toolchain first (proven to compile node-pty on this box), then
+          # the home-manager profile, then the host's /usr/bin as a fallback so
+          # any tool node-gyp shells out to is still reachable from the
+          # otherwise-clean systemd service PATH.
+          "PATH=${servePath}:${config.home.profileDirectory}/bin:/usr/local/bin:/usr/bin:/bin"
           # Compile one translation unit at a time: native addons (node-pty,
           # msgpackr-extract) pull in heavy V8 headers and parallel g++ can
           # exhaust RAM on small ARM boxes.
