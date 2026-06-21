@@ -41,6 +41,12 @@ let
     pkgs.binutils
   ];
   toolchainPath = lib.makeBinPath (toolchain ++ cfg.extraPackages);
+
+  # Log to a file inside the install dir rather than the journal. On this box the
+  # systemd user journal stdout socket is unreliable ("Failed to connect stdout
+  # to the journal socket: Broken pipe"); writing straight to a file bypasses it
+  # and keeps the startup pairing token/URL retrievable.
+  logFile = "${cfg.installDir}/server.log";
 in
 {
   options.services.t3code = {
@@ -187,6 +193,8 @@ in
           ]
           ++ cfg.extraArgs
         );
+        StandardOutput = "append:${logFile}";
+        StandardError = "append:${logFile}";
         Restart = "on-failure";
         RestartSec = 15;
       };
