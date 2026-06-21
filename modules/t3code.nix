@@ -5,14 +5,19 @@
 # headless entrypoint is `t3 serve` — it starts the HTTP/WebSocket server
 # without opening a browser and prints a pairing token / URL / QR code.
 #
-# Native dependencies: the `t3` package depends on `node-pty` (which ships NO
-# Linux prebuilt binary) and pulls in `msgpackr-extract` (no aarch64-linux
-# prebuilt in this tree), so on Linux these are compiled from source via
-# node-gyp at install time. That requires a C/C++ toolchain + python + make.
+# Native dependencies: `t3` depends on `node-pty` (which ships NO Linux
+# prebuilt) and pulls in `msgpackr-extract` (no aarch64-linux prebuilt in this
+# tree), so on Linux these are compiled from source via node-gyp. That needs a
+# C/C++ toolchain + python + make.
 #
-# This module installs the package ONCE into a fixed directory (compiling the
-# native addons a single time), then runs the resulting bundle as a systemd
-# *user* service bound to a chosen interface (e.g. a Tailnet IP).
+# Install vs run are split deliberately:
+#   * The package is installed (and native addons compiled) ONCE by a
+#     home-manager activation step, which runs in the normal user environment
+#     during `home-manager switch`. (A systemd `ExecStartPre` was tried first
+#     but failed in a way that reproduced nowhere else — running the install at
+#     activation time is both simpler and avoids that.)
+#   * The systemd user service only runs the already-built bundle, bound to a
+#     chosen interface (e.g. a Tailnet IP).
 {
   config,
   lib,
@@ -21,6 +26,21 @@
 }:
 let
   cfg = config.services.t3code;
+
+  # node-pty has no Linux prebuilt, so a C/C++ toolchain is mandatory to build
+  # it. git/coreutils/etc. are needed at runtime; the profile is appended so the
+  # installed agent CLIs (claude, codex, opencode, ...) are discoverable.
+  toolchain = [
+    cfg.package
+    pkgs.git
+    pkgs.coreutils
+    pkgs.bash
+    pkgs.python3
+    pkgs.gnumake
+    pkgs.gcc
+    pkgs.binutils
+  ];
+  toolchainPath = lib.makeBinPath (toolchain ++ cfg.extraPackages);
 in
 {
   options.services.t3code = {
@@ -45,7 +65,7 @@ in
         is very early and changes fast, so `latest` is the default; pin to a
         concrete version for a reproducible deployment. The package is only
         (re)installed when this value changes — to refresh `latest`, delete the
-        install directory and restart the service.
+        install directory and re-run `home-manager switch`.
       '';
     };
 
@@ -100,7 +120,7 @@ in
       type = lib.types.listOf lib.types.package;
       default = [ ];
       description = ''
-        Extra packages to place on the service PATH, e.g. additional
+        Extra packages to place on the install/runtime PATH, e.g. additional
         coding-agent CLIs T3 Code should be able to launch.
       '';
     };
@@ -111,64 +131,51 @@ in
     # `t3 project`, and ad-hoc `npx t3 ...` invocations.
     home.packages = [ cfg.package ];
 
-    systemd.user.services.t3code =
-      let
-        # Runtime + native-build toolchain. node-pty ships no Linux prebuilt, so
-        # a C/C++ toolchain is mandatory here, not just a fallback. The
-        # home-manager profile is appended so installed agent CLIs (claude,
-        # codex, opencode, ...) are discoverable by the server.
-        servePath = lib.makeBinPath (
-          [
-            cfg.package
-            pkgs.git
-            pkgs.coreutils
-            pkgs.bash
-            pkgs.python3
-            pkgs.gnumake
-            pkgs.gcc
-            pkgs.binutils
-          ]
-          ++ cfg.extraPackages
-        );
+    # Install (and compile native addons) once, during activation, in the normal
+    # user environment. Idempotent: only (re)installs when the version changes or
+    # the install is missing. Non-fatal: a failed install (e.g. no network) warns
+    # but does not abort `home-manager switch`; the service just won't start
+    # until a later switch completes the install.
+    home.activation.t3codeInstall = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      export PATH=${toolchainPath}:/usr/local/bin:/usr/bin:/bin''${PATH:+:$PATH}
+      t3dir=${lib.escapeShellArg cfg.installDir}
+      t3want=t3@${lib.escapeShellArg cfg.version}
+      if [ -f "$t3dir/node_modules/t3/dist/bin.mjs" ] \
+        && [ "$(cat "$t3dir/.t3-version" 2>/dev/null || true)" = ${lib.escapeShellArg cfg.version} ]; then
+        echo "t3code: $t3want already installed in $t3dir"
+      else
+        echo "t3code: installing $t3want into $t3dir (compiling native addons) ..."
+        $DRY_RUN_CMD mkdir -p "$t3dir"
+        [ -f "$t3dir/package.json" ] || echo '{"private":true}' > "$t3dir/package.json"
+        if ( cd "$t3dir" && $DRY_RUN_CMD npm install --no-audit --no-fund "$t3want" ); then
+          printf '%s' ${lib.escapeShellArg cfg.version} > "$t3dir/.t3-version"
+          echo "t3code: installed $t3want"
+        else
+          echo "t3code: WARNING install of $t3want failed; the service will not start until a future 'home-manager switch' completes it with network access." >&2
+        fi
+      fi
+    '';
 
-        environment = [
-          # Nix toolchain first (proven to compile node-pty on this box), then
-          # the home-manager profile, then the host's /usr/bin as a fallback so
-          # any tool node-gyp shells out to is still reachable from the
-          # otherwise-clean systemd service PATH.
-          "PATH=${servePath}:${config.home.profileDirectory}/bin:/usr/local/bin:/usr/bin:/bin"
-          # Compile one translation unit at a time: native addons (node-pty,
-          # msgpackr-extract) pull in heavy V8 headers and parallel g++ can
-          # exhaust RAM on small ARM boxes.
-          "JOBS=1"
-          "npm_config_jobs=1"
+    systemd.user.services.t3code = {
+      Unit = {
+        Description = "T3 Code headless server (coding-agent web GUI)";
+        Documentation = [ "https://github.com/pingdotgg/t3code" ];
+        After = [ "network-online.target" ];
+        Wants = [ "network-online.target" ];
+        # Don't loop forever if the bind address or install isn't ready yet.
+        StartLimitIntervalSec = 300;
+        StartLimitBurst = 5;
+      };
+
+      Service = {
+        Environment = [
+          "PATH=${toolchainPath}:${config.home.profileDirectory}/bin:/usr/local/bin:/usr/bin:/bin"
           "T3CODE_HOST=${cfg.host}"
           "T3CODE_PORT=${toString cfg.port}"
           "T3CODE_NO_BROWSER=1"
         ];
-
-        # Install (and compile native addons) once. Idempotent: re-runs only
-        # when the requested version changes or the install is missing. Its
-        # output streams to the journal, so build failures are visible via
-        # `journalctl --user -u t3code`.
-        installScript = pkgs.writeShellScript "t3code-install" ''
-          set -euo pipefail
-          dir=${lib.escapeShellArg cfg.installDir}
-          want=t3@${lib.escapeShellArg cfg.version}
-          mkdir -p "$dir"
-          cd "$dir"
-          [ -f package.json ] || echo '{"private":true}' > package.json
-          if [ -f "$dir/node_modules/t3/dist/bin.mjs" ] \
-            && [ "$(cat "$dir/.t3-version" 2>/dev/null || true)" = ${lib.escapeShellArg cfg.version} ]; then
-            echo "t3@${cfg.version} already installed in $dir"
-          else
-            echo "Installing $want into $dir (compiling native addons) ..."
-            npm install --no-audit --no-fund --loglevel=info "$want"
-            printf '%s' ${lib.escapeShellArg cfg.version} > "$dir/.t3-version"
-          fi
-        '';
-
-        serveCommand = lib.concatStringsSep " " (
+        WorkingDirectory = cfg.workingDirectory;
+        ExecStart = lib.concatStringsSep " " (
           [
             "${cfg.package}/bin/node"
             "${cfg.installDir}/node_modules/t3/dist/bin.mjs"
@@ -180,31 +187,11 @@ in
           ]
           ++ cfg.extraArgs
         );
-      in
-      {
-        Unit = {
-          Description = "T3 Code headless server (coding-agent web GUI)";
-          Documentation = [ "https://github.com/pingdotgg/t3code" ];
-          After = [ "network-online.target" ];
-          Wants = [ "network-online.target" ];
-          # Don't melt the box if startup keeps failing: give up after a few
-          # rapid failures instead of looping forever.
-          StartLimitIntervalSec = 300;
-          StartLimitBurst = 5;
-        };
-
-        Service = {
-          Environment = environment;
-          WorkingDirectory = cfg.workingDirectory;
-          ExecStartPre = "${installScript}";
-          ExecStart = serveCommand;
-          Restart = "on-failure";
-          RestartSec = 15;
-          # First start may need to download deps and compile native addons.
-          TimeoutStartSec = "1200";
-        };
-
-        Install.WantedBy = [ "default.target" ];
+        Restart = "on-failure";
+        RestartSec = 15;
       };
+
+      Install.WantedBy = [ "default.target" ];
+    };
   };
 }
