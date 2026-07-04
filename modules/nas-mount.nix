@@ -1,30 +1,35 @@
 # Per-user SMB mount of the NAS share, for standalone home-manager on non-NixOS
-# Linux hosts (nuc, orion, ...). This is the SAME mechanism as GNOME's
-# "Connect to Server" / single-click network mount: GVFS (`gio mount`).
+# Linux hosts. Same mechanism as GNOME's "Connect to Server": GVFS (`gio`).
+# Works on BOTH desktop and headless/SSH boxes, fully rootless.
 #
 # Why GVFS and not rclone/CIFS:
-#   * kernel CIFS (mount.cifs) needs root and lives in /etc — home-manager
-#     cannot own it on a non-NixOS box, and it is system-global, not per-user.
-#   * a private FUSE mount (rclone/sshfs) is rootless but must create its own
-#     FUSE mount via the setuid /usr/bin/fusermount3 — which the current Ubuntu
-#     kernel refuses for an unprivileged session (mount() returns EPERM even
-#     with full caps). That path simply does not work here.
-#   * GVFS sidesteps both: the login session already runs one working gvfs FUSE
-#     bridge at /run/user/$UID/gvfs (gvfsd-fuse). `gio mount` just adds the SMB
-#     share into that existing bridge — no new mount, no root, no fstab. The
-#     files are then reachable from the terminal under that gvfs path, and we
-#     symlink a stable location (default ~/mnt/nas) at it.
+#   * kernel CIFS needs root and lives in /etc — home-manager can't own it on a
+#     non-NixOS box, and it is system-global, not per-user.
+#   * a private FUSE mount (rclone/sshfs) creates its own mount via the setuid
+#     /usr/bin/fusermount3, which some current Ubuntu kernels (e.g. nuc's
+#     7.0.0-27) refuse for an unprivileged session (mount() EPERM). Dead end.
+#   * GVFS mounts the share into the session's gvfs FUSE bridge at
+#     /run/user/$UID/gvfs — no new privileged mount, no root, no fstab. On a
+#     desktop the bridge already runs; on a headless/SSH host we start our own
+#     `gvfsd-fuse` (rootless). The files are then reachable from the terminal,
+#     and we symlink a stable path (default ~/mnt/nas) at them.
 #
-# Secret (repo is public): the SMB password is never committed. It is pulled
-# from Bitwarden with `rbw` during `home-manager switch` and written to a 0600
-# file OUTSIDE the nix store (default ~/.config/nas/smb-pass). The login service
-# feeds it to `gio mount` on stdin, so no keyring seeding and no prompt.
+# Needs the distro's gvfs pieces (gvfsd, gvfsd-fuse, gvfsd-smb) — present on
+# Ubuntu/Debian desktops and servers with the `gvfs`/`gvfs-backends` packages.
+# `gio` itself may come from nix; GIO_EXTRA_MODULES points it at the system
+# gvfs backend so it understands smb:// outside a desktop session.
 #
-# Requires: a running user session with GVFS (gvfsd + gvfsd-fuse) — i.e. a
-# desktop login. Enable only on such hosts. Bootstrap once per machine:
+# Secret (repo is public): the SMB password is never committed. Pulled from
+# Bitwarden with `rbw` during `home-manager switch` into a 0600 file outside the
+# nix store (default ~/.config/nas/smb-pass), fed to `gio` on stdin — no keyring
+# seeding, no prompt. Bootstrap once per machine:
 #   rbw config set email <you@example.com>
 #   rbw config set pinentry pinentry-curses
 #   rbw login                                  # unlock, then `home-manager switch`
+#
+# Persistence when logged out (headless boxes reached only by SSH): enable
+# `systemd --user` lingering so the mount survives between sessions:
+#   loginctl enable-linger "$USER"
 {
   config,
   lib,
@@ -34,48 +39,85 @@
 let
   cfg = config.services.nasMount;
 
-  # Encoded name gvfs gives an SMB mount under /run/user/$UID/gvfs.
   gvfsName = "smb-share:server=${cfg.host},share=${cfg.share}";
 
-  mountScript = pkgs.writeShellScript "nas-gvfs-mount" ''
-    set -eu
-    export PATH=${
-      lib.makeBinPath [
-        cfg.giobPackage
-        pkgs.coreutils
-      ]
-    }''${PATH:+:$PATH}
+  # System tools first (gio/gvfsd-fuse/systemctl/systemd-run/fusermount3 must be
+  # the distro's, to talk to the running user manager and system gvfs), with
+  # nix coreutils/gio as fallback.
+  binPath = "/usr/bin:/bin:${
+    lib.makeBinPath [
+      cfg.giobPackage
+      pkgs.coreutils
+    ]
+  }";
 
-    # Force gio to take credentials from stdin rather than popping a GUI
-    # password dialog (which would hang this non-interactive service).
+  mountScript = pkgs.writeShellScript "nas-gvfs-mount" ''
+    set -u
+    export PATH=${binPath}''${PATH:+:$PATH}
+    # Force gio to read credentials from stdin, never a GUI dialog.
     unset DISPLAY WAYLAND_DISPLAY || true
 
-    gvfs_path="$XDG_RUNTIME_DIR/gvfs/${gvfsName}"
+    bridge="$XDG_RUNTIME_DIR/gvfs"
+    sp="$bridge/${gvfsName}"
 
-    # Add the share to the session's gvfs bridge if not already there. `gio
-    # mount` reads user / domain / password from stdin (no tty, no GUI agent).
-    if [ ! -d "$gvfs_path" ]; then
+    # Let nix `gio` find the system gvfs SMB backend outside a desktop session.
+    mods=$(dirname "$(ls /usr/lib/*/gio/modules/libgvfsdbus.so /usr/lib/gio/modules/libgvfsdbus.so 2>/dev/null | head -1)" 2>/dev/null || true)
+    [ -n "$mods" ] && export GIO_EXTRA_MODULES="''${GIO_EXTRA_MODULES:+$GIO_EXTRA_MODULES:}$mods"
+
+    # 1. Ensure a HEALTHY gvfs fuse bridge. `ls` succeeds on a live bridge
+    #    (desktop session already runs one -> reuse it). If it is missing or
+    #    stale/disconnected (ENOTCONN), tear it down and start our own.
+    if ! ls "$bridge" >/dev/null 2>&1; then
+      fusermount3 -u "$bridge" 2>/dev/null || fusermount -u "$bridge" 2>/dev/null || umount "$bridge" 2>/dev/null || true
+      systemctl --user reset-failed nas-gvfs-bridge 2>/dev/null || true
+      gf=$(ls /usr/lib/gvfs/gvfsd-fuse /usr/libexec/gvfs/gvfsd-fuse 2>/dev/null | head -1 || true)
+      if [ -n "$gf" ]; then
+        mkdir -p "$bridge"
+        systemd-run --user --quiet --collect --unit=nas-gvfs-bridge \
+          --property=Restart=on-failure "$gf" -f "$bridge" || true
+        for _ in $(seq 1 20); do ls "$bridge" >/dev/null 2>&1 && break; sleep 0.5; done
+      fi
+    fi
+    if ! ls "$bridge" >/dev/null 2>&1; then
+      echo "nas-mount: no working gvfs bridge at $bridge (is gvfs installed / a session running?)." >&2
+      exit 1
+    fi
+
+    # 2. Mount the share into gvfs if not already present.
+    if [ ! -d "$sp" ]; then
       if [ ! -r ${lib.escapeShellArg cfg.passFile} ]; then
-        echo "nas-mount: no password file at ${cfg.passFile}; run 'rbw unlock' and 'home-manager switch'." >&2
+        echo "nas-mount: no password file at ${cfg.passFile}; run 'rbw unlock' then 'home-manager switch'." >&2
         exit 1
       fi
       printf '%s\n%s\n%s\n' \
         ${lib.escapeShellArg cfg.user} \
         ${lib.escapeShellArg cfg.domain} \
         "$(cat ${lib.escapeShellArg cfg.passFile})" \
-        | gio mount "smb://${cfg.host}/${cfg.share}"
+        | gio mount "smb://${cfg.host}/${cfg.share}" || true
+      for _ in $(seq 1 20); do [ -d "$sp" ] && break; sleep 0.5; done
+    fi
+    if [ ! -d "$sp" ]; then
+      echo "nas-mount: share did not appear at $sp after mounting." >&2
+      exit 1
     fi
 
-    # Stable, terminal-friendly path -> the gvfs mount.
+    # 3. Stable, terminal-friendly path -> the gvfs mount. Replace any leftover
+    #    symlink or stale directory (e.g. from an older module) at that path, so
+    #    `ln` can't drop the link *inside* an existing dir.
     mkdir -p "$(dirname ${lib.escapeShellArg cfg.mountPoint})"
-    ln -sfn "$gvfs_path" ${lib.escapeShellArg cfg.mountPoint}
+    mountpoint -q ${lib.escapeShellArg cfg.mountPoint} 2>/dev/null \
+      || rm -rf ${lib.escapeShellArg cfg.mountPoint} 2>/dev/null || true
+    ln -sfn "$sp" ${lib.escapeShellArg cfg.mountPoint}
+    echo "nas-mount: mounted at ${cfg.mountPoint}"
   '';
 
   unmountScript = pkgs.writeShellScript "nas-gvfs-unmount" ''
     set -u
-    export PATH=${lib.makeBinPath [ cfg.giobPackage pkgs.coreutils ]}''${PATH:+:$PATH}
+    export PATH=${binPath}''${PATH:+:$PATH}
+    unset DISPLAY WAYLAND_DISPLAY || true
     gio mount -u "smb://${cfg.host}/${cfg.share}" 2>/dev/null || true
     rm -f ${lib.escapeShellArg cfg.mountPoint} 2>/dev/null || true
+    systemctl --user stop nas-gvfs-bridge 2>/dev/null || true
   '';
 in
 {
@@ -110,10 +152,7 @@ in
       type = lib.types.str;
       default = "${config.home.homeDirectory}/mnt/nas";
       defaultText = lib.literalExpression ''"''${config.home.homeDirectory}/mnt/nas"'';
-      description = ''
-        Stable symlink pointing at the gvfs mount, for terminal/app access.
-        Same path on every machine (the share is per-user anyway).
-      '';
+      description = "Stable symlink at the gvfs mount, for terminal/app access.";
     };
 
     passFile = lib.mkOption {
@@ -131,7 +170,7 @@ in
       type = lib.types.package;
       default = pkgs.glib.bin;
       defaultText = lib.literalExpression "pkgs.glib.bin";
-      description = "Package providing the `gio` binary.";
+      description = "Package providing a fallback `gio` binary.";
     };
 
     bitwarden = {
@@ -166,8 +205,7 @@ in
   config = lib.mkMerge [
     {
       warnings = lib.optional (cfg.enable && !pkgs.stdenv.isLinux) (
-        "services.nasMount is enabled but only supported on Linux (GVFS user session); "
-        + "it is a no-op on this platform."
+        "services.nasMount is enabled but only supported on Linux (GVFS); it is a no-op here."
       );
     }
 
@@ -208,9 +246,8 @@ in
         Unit = {
           Description = "Mount NAS SMB share '${cfg.share}' into GVFS and symlink ${cfg.mountPoint}";
           Documentation = [ "man:gio(1)" ];
-          # GVFS (gvfsd-fuse) is part of the graphical session.
-          After = [ "graphical-session.target" ];
-          PartOf = [ "graphical-session.target" ];
+          # Works headless or desktop; no graphical-session dependency.
+          After = [ "default.target" ];
         };
 
         Service = {
@@ -220,7 +257,7 @@ in
           ExecStop = "${unmountScript}";
         };
 
-        Install.WantedBy = [ "graphical-session.target" ];
+        Install.WantedBy = [ "default.target" ];
       };
     })
   ];
