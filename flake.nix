@@ -119,6 +119,10 @@
           ./profiles/orion.nix
           ./profiles/alex.nix
         ];
+        "alex@nuc" = mkHome "x86_64-linux" "alex" [
+          ./profiles/nuc.nix
+          ./profiles/alex.nix
+        ];
         "alex@nas" = mkHome "x86_64-linux" "alex" [
           ./profiles/alex.nix
         ];
