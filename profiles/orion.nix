@@ -1,6 +1,3 @@
-# orion: headless aarch64-linux box managed by standalone home-manager (no
-# NixOS). It runs T3 Code as a personal coding-agent server, reachable over the
-# tailnet.
 { ... }:
 {
   imports = [

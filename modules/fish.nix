@@ -36,6 +36,15 @@
       perfrpt = "perf report -g 'graph,0.5,caller'";
     };
 
+    # Fish doesn't read /etc/profile.d, so the multi-user Nix daemon
+    # integration (which puts `nix` on PATH) is never sourced automatically.
+    # Pull it in here so `nix` is available in every fish shell.
+    shellInit = ''
+      if test -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
+        source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
+      end
+    '';
+
     interactiveShellInit = ''
       fish_add_path $HOME/.local/bin
       fish_add_path $HOME/dotfiles/bin

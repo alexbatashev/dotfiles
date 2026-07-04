@@ -1,20 +1,29 @@
-# Rootless SMB mount for the NAS `home` share, for standalone home-manager on
-# non-NixOS Linux hosts (orion and friends).
+# Per-user SMB mount of the NAS share, for standalone home-manager on non-NixOS
+# Linux hosts (nuc, orion, ...). This is the SAME mechanism as GNOME's
+# "Connect to Server" / single-click network mount: GVFS (`gio mount`).
 #
-# Why rclone (FUSE) instead of a kernel CIFS mount: these boxes are not NixOS
-# and home-manager cannot create a privileged `mount.cifs` mount without root.
-# `rclone mount` runs entirely in user space as a `systemd --user` service, so
-# the whole thing is owned by home-manager with no sudo and no /etc changes.
+# Why GVFS and not rclone/CIFS:
+#   * kernel CIFS (mount.cifs) needs root and lives in /etc — home-manager
+#     cannot own it on a non-NixOS box, and it is system-global, not per-user.
+#   * a private FUSE mount (rclone/sshfs) is rootless but must create its own
+#     FUSE mount via the setuid /usr/bin/fusermount3 — which the current Ubuntu
+#     kernel refuses for an unprivileged session (mount() returns EPERM even
+#     with full caps). That path simply does not work here.
+#   * GVFS sidesteps both: the login session already runs one working gvfs FUSE
+#     bridge at /run/user/$UID/gvfs (gvfsd-fuse). `gio mount` just adds the SMB
+#     share into that existing bridge — no new mount, no root, no fstab. The
+#     files are then reachable from the terminal under that gvfs path, and we
+#     symlink a stable location (default ~/mnt/nas) at it.
 #
-# Secrets (repo is public): the SMB password is never committed. It is pulled
-# from Bitwarden with `rbw` during `home-manager switch`, obscured with
-# `rclone obscure`, and written to a 0600 rclone config file OUTSIDE the nix
-# store (default ~/.config/nas/rclone.conf). The service reads that file at
-# start, so the mount is reboot-safe and needs no unlocked agent at boot.
+# Secret (repo is public): the SMB password is never committed. It is pulled
+# from Bitwarden with `rbw` during `home-manager switch` and written to a 0600
+# file OUTSIDE the nix store (default ~/.config/nas/smb-pass). The login service
+# feeds it to `gio mount` on stdin, so no keyring seeding and no prompt.
 #
-# Bootstrap once per machine (over SSH is fine):
+# Requires: a running user session with GVFS (gvfsd + gvfsd-fuse) — i.e. a
+# desktop login. Enable only on such hosts. Bootstrap once per machine:
 #   rbw config set email <you@example.com>
-#   rbw config set pinentry pinentry-curses   # headless-friendly prompt
+#   rbw config set pinentry pinentry-curses
 #   rbw login                                  # unlock, then `home-manager switch`
 {
   config,
@@ -25,34 +34,53 @@
 let
   cfg = config.services.nasMount;
 
-  # rclone finds `fusermount3` on PATH to (un)mount; coreutils for mkdir.
-  runtimePath = lib.makeBinPath [
-    cfg.package
-    cfg.fusePackage
-    pkgs.coreutils
-  ];
+  # Encoded name gvfs gives an SMB mount under /run/user/$UID/gvfs.
+  gvfsName = "smb-share:server=${cfg.host},share=${cfg.share}";
 
-  # Password fetch/obscure at activation time needs rbw + rclone + coreutils.
-  credentialPath = lib.makeBinPath [
-    cfg.bitwarden.package
-    cfg.package
-    pkgs.coreutils
-  ];
+  mountScript = pkgs.writeShellScript "nas-gvfs-mount" ''
+    set -eu
+    export PATH=${
+      lib.makeBinPath [
+        cfg.giobPackage
+        pkgs.coreutils
+      ]
+    }''${PATH:+:$PATH}
 
-  mountArgs = lib.concatStringsSep " " (
-    [
-      "mount"
-      "--config"
-      (lib.escapeShellArg cfg.configFile)
-      "${cfg.remoteName}:${cfg.share}"
-      (lib.escapeShellArg cfg.mountPoint)
-    ]
-    ++ cfg.extraMountFlags
-  );
+    # Force gio to take credentials from stdin rather than popping a GUI
+    # password dialog (which would hang this non-interactive service).
+    unset DISPLAY WAYLAND_DISPLAY || true
+
+    gvfs_path="$XDG_RUNTIME_DIR/gvfs/${gvfsName}"
+
+    # Add the share to the session's gvfs bridge if not already there. `gio
+    # mount` reads user / domain / password from stdin (no tty, no GUI agent).
+    if [ ! -d "$gvfs_path" ]; then
+      if [ ! -r ${lib.escapeShellArg cfg.passFile} ]; then
+        echo "nas-mount: no password file at ${cfg.passFile}; run 'rbw unlock' and 'home-manager switch'." >&2
+        exit 1
+      fi
+      printf '%s\n%s\n%s\n' \
+        ${lib.escapeShellArg cfg.user} \
+        ${lib.escapeShellArg cfg.domain} \
+        "$(cat ${lib.escapeShellArg cfg.passFile})" \
+        | gio mount "smb://${cfg.host}/${cfg.share}"
+    fi
+
+    # Stable, terminal-friendly path -> the gvfs mount.
+    mkdir -p "$(dirname ${lib.escapeShellArg cfg.mountPoint})"
+    ln -sfn "$gvfs_path" ${lib.escapeShellArg cfg.mountPoint}
+  '';
+
+  unmountScript = pkgs.writeShellScript "nas-gvfs-unmount" ''
+    set -u
+    export PATH=${lib.makeBinPath [ cfg.giobPackage pkgs.coreutils ]}''${PATH:+:$PATH}
+    gio mount -u "smb://${cfg.host}/${cfg.share}" 2>/dev/null || true
+    rm -f ${lib.escapeShellArg cfg.mountPoint} 2>/dev/null || true
+  '';
 in
 {
   options.services.nasMount = {
-    enable = lib.mkEnableOption "the rootless rclone SMB mount of the NAS home share";
+    enable = lib.mkEnableOption "the per-user GVFS SMB mount of the NAS share";
 
     host = lib.mkOption {
       type = lib.types.str;
@@ -63,7 +91,19 @@ in
     share = lib.mkOption {
       type = lib.types.str;
       default = "home";
-      description = "SMB share to mount (the first path component under the host).";
+      description = "SMB share to mount.";
+    };
+
+    user = lib.mkOption {
+      type = lib.types.str;
+      default = "alex";
+      description = "SMB username.";
+    };
+
+    domain = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+      description = "SMB workgroup/domain (empty accepts the server default).";
     };
 
     mountPoint = lib.mkOption {
@@ -71,62 +111,34 @@ in
       default = "${config.home.homeDirectory}/mnt/nas";
       defaultText = lib.literalExpression ''"''${config.home.homeDirectory}/mnt/nas"'';
       description = ''
-        Directory the share is mounted at. Defaults to a path under $HOME so it
-        is the same on every machine (the `home` share is per-user anyway).
+        Stable symlink pointing at the gvfs mount, for terminal/app access.
+        Same path on every machine (the share is per-user anyway).
       '';
     };
 
-    remoteName = lib.mkOption {
+    passFile = lib.mkOption {
       type = lib.types.str;
-      default = "nas";
-      description = "Name of the rclone remote written into the generated config.";
-    };
-
-    configFile = lib.mkOption {
-      type = lib.types.str;
-      default = "${config.xdg.configHome}/nas/rclone.conf";
-      defaultText = lib.literalExpression ''"''${config.xdg.configHome}/nas/rclone.conf"'';
+      default = "${config.xdg.configHome}/nas/smb-pass";
+      defaultText = lib.literalExpression ''"''${config.xdg.configHome}/nas/smb-pass"'';
       description = ''
-        Path to the rclone config file holding the (obscured) SMB credentials.
-        Written at activation with mode 0600, outside the world-readable nix
-        store. Not managed if `bitwarden.enable = false` (provide it yourself).
+        0600 file holding the SMB password, written at activation from Bitwarden
+        (outside the world-readable nix store). Not managed if
+        `bitwarden.enable = false` (provide it yourself).
       '';
     };
 
-    extraMountFlags = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [
-        "--vfs-cache-mode"
-        "writes"
-        "--dir-cache-time"
-        "1m"
-      ];
-      description = "Extra flags appended to `rclone mount`.";
-    };
-
-    package = lib.mkOption {
+    giobPackage = lib.mkOption {
       type = lib.types.package;
-      default = pkgs.rclone;
-      defaultText = lib.literalExpression "pkgs.rclone";
-      description = "rclone package providing `rclone mount`/`rclone obscure`.";
-    };
-
-    fusePackage = lib.mkOption {
-      type = lib.types.package;
-      default = pkgs.fuse3;
-      defaultText = lib.literalExpression "pkgs.fuse3";
-      description = "FUSE package providing `fusermount3` for (un)mounting.";
+      default = pkgs.glib.bin;
+      defaultText = lib.literalExpression "pkgs.glib.bin";
+      description = "Package providing the `gio` binary.";
     };
 
     bitwarden = {
       enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = ''
-          Fetch the SMB password from Bitwarden with `rbw` during
-          `home-manager switch` and write the obscured rclone config. Disable to
-          manage `configFile` entirely by hand.
-        '';
+        description = "Fetch the SMB password from Bitwarden with `rbw` during `home-manager switch`.";
       };
 
       package = lib.mkOption {
@@ -145,90 +157,70 @@ in
 
       item = lib.mkOption {
         type = lib.types.str;
-        default = "nas-smb";
+        default = "DiskStation";
         description = "Name of the Bitwarden item whose password is the SMB password.";
       };
     };
   };
 
   config = lib.mkMerge [
-    # Guard rail: the option namespace exists on every host (imported globally),
-    # but the implementation is Linux-only.
     {
       warnings = lib.optional (cfg.enable && !pkgs.stdenv.isLinux) (
-        "services.nasMount is enabled but only supported on Linux "
-        + "(systemd user service); it is a no-op on this platform."
+        "services.nasMount is enabled but only supported on Linux (GVFS user session); "
+        + "it is a no-op on this platform."
       );
     }
 
     (lib.mkIf (cfg.enable && pkgs.stdenv.isLinux) {
       home.packages =
-        [
-          cfg.package
-          cfg.fusePackage
-        ]
+        [ cfg.giobPackage ]
         ++ lib.optionals cfg.bitwarden.enable [
           cfg.bitwarden.package
           cfg.bitwarden.pinentryPackage
         ];
 
-      # Fetch the password from Bitwarden and (re)write the obscured rclone
-      # config. Non-fatal: if the vault is locked / offline we warn and keep any
-      # existing credentials rather than aborting the switch or truncating a
-      # working config.
+      # Fetch the password from Bitwarden and (re)write the 0600 pass file.
+      # Non-fatal: if the vault is locked/offline we warn and keep any existing
+      # file rather than aborting the switch or truncating a working password.
       home.activation.nasMountCredentials = lib.mkIf cfg.bitwarden.enable (
         lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-          export PATH=${credentialPath}''${PATH:+:$PATH}
-          cfgfile=${lib.escapeShellArg cfg.configFile}
-          cfgdir=$(dirname "$cfgfile")
-          mkdir -p "$cfgdir"
-          chmod 700 "$cfgdir"
-
+          export PATH=${
+            lib.makeBinPath [
+              cfg.bitwarden.package
+              pkgs.coreutils
+            ]
+          }''${PATH:+:$PATH}
+          passfile=${lib.escapeShellArg cfg.passFile}
+          mkdir -p "$(dirname "$passfile")"
+          chmod 700 "$(dirname "$passfile")"
           if ! smbpass=$(rbw get ${lib.escapeShellArg cfg.bitwarden.item} 2>/dev/null) || [ -z "$smbpass" ]; then
-            echo "nas-mount: WARNING could not read the SMB password from Bitwarden item '${cfg.bitwarden.item}' via rbw." >&2
-            echo "nas-mount:   Run 'rbw unlock' (or 'rbw login') then re-run 'home-manager switch'. Keeping any existing credentials file." >&2
+            echo "nas-mount: WARNING could not read SMB password from Bitwarden item '${cfg.bitwarden.item}' via rbw." >&2
+            echo "nas-mount:   Run 'rbw unlock' then re-run 'home-manager switch'. Keeping any existing password file." >&2
           else
-            obscured=$(rclone obscure "$smbpass")
-            (
-              umask 077
-              {
-                printf '[%s]\n' ${lib.escapeShellArg cfg.remoteName}
-                printf 'type = smb\n'
-                printf 'host = %s\n' ${lib.escapeShellArg cfg.host}
-                printf 'user = alex\n'
-                printf 'pass = %s\n' "$obscured"
-              } > "$cfgfile"
-            )
-            chmod 600 "$cfgfile"
-            echo "nas-mount: wrote rclone credentials to $cfgfile"
+            ( umask 077; printf '%s' "$smbpass" > "$passfile" )
+            chmod 600 "$passfile"
+            echo "nas-mount: wrote SMB password to $passfile"
           fi
         ''
       );
 
       systemd.user.services.nas-mount = {
         Unit = {
-          Description = "Mount NAS SMB share '${cfg.share}' at ${cfg.mountPoint} (rclone/FUSE)";
-          Documentation = [ "https://rclone.org/smb/" ];
-          After = [ "network-online.target" ];
-          Wants = [ "network-online.target" ];
+          Description = "Mount NAS SMB share '${cfg.share}' into GVFS and symlink ${cfg.mountPoint}";
+          Documentation = [ "man:gio(1)" ];
+          # GVFS (gvfsd-fuse) is part of the graphical session.
+          After = [ "graphical-session.target" ];
+          PartOf = [ "graphical-session.target" ];
         };
 
         Service = {
-          # rclone signals readiness to systemd once the mount is live.
-          Type = "notify";
-          Environment = [ "PATH=${runtimePath}" ];
-          ExecStartPre = [
-            "${pkgs.coreutils}/bin/mkdir -p ${lib.escapeShellArg cfg.mountPoint}"
-            # Clear a stale mountpoint left by an unclean shutdown (ignore errors).
-            "-${cfg.fusePackage}/bin/fusermount3 -uz ${lib.escapeShellArg cfg.mountPoint}"
-          ];
-          ExecStart = "${cfg.package}/bin/rclone ${mountArgs}";
-          ExecStop = "${cfg.fusePackage}/bin/fusermount3 -u ${lib.escapeShellArg cfg.mountPoint}";
-          Restart = "on-failure";
-          RestartSec = 10;
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = "${mountScript}";
+          ExecStop = "${unmountScript}";
         };
 
-        Install.WantedBy = [ "default.target" ];
+        Install.WantedBy = [ "graphical-session.target" ];
       };
     })
   ];

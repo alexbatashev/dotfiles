@@ -1,6 +1,3 @@
-# nuc: x86_64-linux GNOME box on non-NixOS Ubuntu, managed by standalone
-# home-manager. Runs T3 Code as a personal coding-agent server over the tailnet,
-# plus a local GUI session.
 { config, ... }:
 {
   imports = [
