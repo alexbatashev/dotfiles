@@ -57,6 +57,16 @@
       pull.rebase = true;
       push.autoSetupRemote = true;
 
+      # Use gh's stored token as the credential helper for HTTPS remotes.
+      # Declared here because the Nix-managed global config is read-only, so
+      # `gh auth login` can't write it itself (it fails with "could not lock
+      # config file ... Permission denied"). Answer "No" to gh's
+      # "Authenticate Git with your GitHub credentials?" prompt.
+      credential = {
+        "https://github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
+        "https://gist.github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
+      };
+
       gc.auto = 256;
       gpg.format = "ssh";
       branch.sort = "-committerdate";
