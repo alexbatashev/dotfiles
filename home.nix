@@ -188,5 +188,6 @@
     ./modules/ghostty.nix
     ./modules/helix.nix
     ./modules/tmux.nix
+    ./modules/nas-mount.nix
   ];
 }
