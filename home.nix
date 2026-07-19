@@ -42,6 +42,7 @@
 
     nodejs
     python3
+    uv
 
     graphviz
 
