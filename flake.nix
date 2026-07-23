@@ -19,8 +19,6 @@
     };
 
     zed.url = "github:zed-industries/zed";
-    codex-cli-nix.url = "github:sadjow/codex-cli-nix";
-    claude-code.url = "github:sadjow/claude-code-nix";
     nixgl.url = "github:nix-community/nixGL";
   };
 
@@ -41,7 +39,6 @@
       darwin,
       home-manager,
       nixpkgs,
-      claude-code,
       ...
     }@inputs:
     let
@@ -63,8 +60,6 @@
             { nixpkgs.config = nixpkgsConfig; }
             inputs.home-manager.darwinModules.home-manager
             {
-              nixpkgs.overlays = [ claude-code.overlays.default ];
-
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.extraSpecialArgs = {
@@ -92,13 +87,7 @@
               username
               ;
           };
-          modules = [
-            {
-              nixpkgs.overlays = [ claude-code.overlays.default ];
-            }
-            ./home.nix
-          ]
-          ++ extraModules;
+          modules = [ ./home.nix ] ++ extraModules;
         };
     in
     {

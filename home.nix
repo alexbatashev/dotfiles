@@ -49,7 +49,7 @@
     nil
     nixd
 
-    inputs.codex-cli-nix.packages.${pkgs.system}.default
+    codex
     claude-code
     opencode
   ];
