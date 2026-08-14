@@ -28,6 +28,7 @@
 
     git-lfs
     gh
+    jujutsu
 
     mermaid-cli
 
