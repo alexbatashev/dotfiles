@@ -18,6 +18,7 @@
   nix.settings.builders-use-substitutes = true;
 
   users.users.${username}.home = "/Users/${username}";
+  system.primaryUser = username;
 
   security.pam.services.sudo_local.touchIdAuth = true;
 

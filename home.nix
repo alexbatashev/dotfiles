@@ -184,6 +184,7 @@
   ];
 
   imports = [
+    ./modules/agents.nix
     ./modules/fish.nix
     ./modules/git.nix
     ./modules/ghostty.nix
