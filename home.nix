@@ -26,6 +26,8 @@
     lazygit
     bloaty
 
+    rustup
+
     git-lfs
     gh
     jujutsu

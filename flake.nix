@@ -19,7 +19,6 @@
     };
 
     zed.url = "github:zed-industries/zed";
-    nixgl.url = "github:nix-community/nixGL";
   };
 
   outputs =
@@ -90,6 +89,12 @@
       homeConfigurations = {
         "alex@desktop" = mkHome "x86_64-linux" "alex" [
           ./profiles/gui.nix
+          ./profiles/desktop.nix
+          ./profiles/alex.nix
+        ];
+        "alex@tower" = mkHome "x86_64-linux" "alex" [
+          ./profiles/gui.nix
+          ./profiles/omarchy.nix
           ./profiles/desktop.nix
           ./profiles/alex.nix
         ];
