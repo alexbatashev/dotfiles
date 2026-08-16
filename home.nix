@@ -38,7 +38,12 @@
     ninja
     pnpm
     starpls
-    bazelisk
+    # nixpkgs bazelisk ships a stub sha256sum that shadows coreutils
+    (symlinkJoin {
+      name = "bazelisk";
+      paths = [ bazelisk ];
+      postBuild = "rm $out/bin/sha256sum";
+    })
     (pkgs.writeShellScriptBin "bazel" ''
       exec ${lib.getExe pkgs.bazelisk} "$@"
     '')
