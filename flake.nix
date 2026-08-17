@@ -19,6 +19,11 @@
     };
 
     zed.url = "github:zed-industries/zed";
+
+    herdr = {
+      url = "github:herdrdev/herdr";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

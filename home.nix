@@ -60,6 +60,7 @@
     codex
     claude-code
     opencode
+    inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   programs.home-manager.enable = true;
@@ -197,6 +198,7 @@
     ./modules/git.nix
     ./modules/ghostty.nix
     ./modules/helix.nix
+    ./modules/herdr.nix
     ./modules/tmux.nix
     ./modules/nas-mount.nix
   ];
