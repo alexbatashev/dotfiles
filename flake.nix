@@ -41,6 +41,10 @@
         allowUnfree = true;
       };
 
+      syncthingClient = {
+        services.syncthing.enable = true;
+      };
+
       mkDarwin =
         username: extraModules: extraHome:
         darwin.lib.darwinSystem {
@@ -88,7 +92,12 @@
         "alex@macbook" =
           mkDarwin "alex"
             [ ./profiles/macbook.nix ]
-            [ ./profiles/alex.nix ./profiles/gui.nix ./profiles/macos.nix ];
+            [
+              ./profiles/alex.nix
+              ./profiles/gui.nix
+              ./profiles/macos.nix
+              syncthingClient
+            ];
       };
 
       homeConfigurations = {
@@ -96,20 +105,24 @@
           ./profiles/gui.nix
           ./profiles/desktop.nix
           ./profiles/alex.nix
+          syncthingClient
         ];
         "alex@tower" = mkHome "x86_64-linux" "alex" [
           ./profiles/gui.nix
           ./profiles/omarchy.nix
           ./profiles/desktop.nix
           ./profiles/alex.nix
+          syncthingClient
         ];
         "alex@orion" = mkHome "aarch64-linux" "alex" [
           ./profiles/orion.nix
           ./profiles/alex.nix
+          syncthingClient
         ];
         "alex@nuc" = mkHome "x86_64-linux" "alex" [
           ./profiles/nuc.nix
           ./profiles/alex.nix
+          syncthingClient
         ];
         "alex@nas" = mkHome "x86_64-linux" "alex" [
           ./profiles/alex.nix
