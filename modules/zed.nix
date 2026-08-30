@@ -1,11 +1,12 @@
 {
+  config,
   pkgs,
   ...
 }:
 {
   programs.zed-editor = {
     enable = true;
-    package = pkgs.zed-editor;
+    package = if config.os.shipsUserTools then null else pkgs.zed-editor;
     extensions = [
       "nix"
       "toml"

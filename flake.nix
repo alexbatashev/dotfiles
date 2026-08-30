@@ -18,14 +18,16 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    zed.url = "github:zed-industries/zed";
-
     herdr = {
       url = "github:herdrdev/herdr";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
+  # Hosts are described on two axes. `os/` says what the operating system
+  # already provides, `hosts/` says what the machine needs on top. Omarchy
+  # ships its own curated tool set, so nix installs only the gaps there; Ubuntu
+  # and macOS get everything from nix.
   outputs =
     {
       self,
@@ -37,96 +39,63 @@
     let
       inherit (self) outputs;
 
+      username = "alex";
+
       nixpkgsConfig = {
         allowUnfree = true;
+        nvidia.acceptLicense = true;
       };
 
-      syncthingClient = {
-        services.syncthing.enable = true;
+      specialArgs = {
+        inherit inputs outputs username;
       };
 
       mkDarwin =
-        username: extraModules: extraHome:
+        hostModule: homeModules:
         darwin.lib.darwinSystem {
           system = "aarch64-darwin";
-          specialArgs = {
-            inherit inputs outputs username;
-            darwinModules = "${self}/modules/darwin";
-          };
+          inherit specialArgs;
           modules = [
             { nixpkgs.config = nixpkgsConfig; }
+            hostModule
             inputs.home-manager.darwinModules.home-manager
             {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.extraSpecialArgs = {
-                inherit inputs outputs username;
-              };
-              home-manager.users.${username} = {
-                imports = [ ./home.nix ] ++ extraHome;
-              };
+              home-manager.extraSpecialArgs = specialArgs;
+              home-manager.users.${username}.imports = [ ./home.nix ] ++ homeModules;
             }
-          ]
-          ++ extraModules;
+          ];
         };
 
       mkHome =
-        system: username: extraModules:
+        system: osModule: hostModules:
         home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
             inherit system;
             config = nixpkgsConfig;
           };
-          extraSpecialArgs = {
-            inherit
-              inputs
-              outputs
-              username
-              ;
-          };
-          modules = [ ./home.nix ] ++ extraModules;
+          extraSpecialArgs = specialArgs;
+          modules = [
+            ./home.nix
+            osModule
+          ]
+          ++ hostModules;
         };
     in
     {
       darwinConfigurations = {
-        "alex@macbook" =
-          mkDarwin "alex"
-            [ ./profiles/macbook.nix ]
-            [
-              ./profiles/alex.nix
-              ./profiles/gui.nix
-              ./profiles/macos.nix
-              syncthingClient
-            ];
+        "alex@macbook" = mkDarwin ./hosts/macbook.nix [
+          ./os/macos.nix
+          ./modules/gui.nix
+        ];
       };
 
       homeConfigurations = {
-        "alex@desktop" = mkHome "x86_64-linux" "alex" [
-          ./profiles/gui.nix
-          ./profiles/desktop.nix
-          ./profiles/alex.nix
-          syncthingClient
-        ];
-        "alex@tower" = mkHome "x86_64-linux" "alex" [
-          ./profiles/gui.nix
-          ./profiles/omarchy.nix
-          ./profiles/desktop.nix
-          ./profiles/alex.nix
-          syncthingClient
-        ];
-        "alex@orion" = mkHome "aarch64-linux" "alex" [
-          ./profiles/orion.nix
-          ./profiles/alex.nix
-          syncthingClient
-        ];
-        "alex@nuc" = mkHome "x86_64-linux" "alex" [
-          ./profiles/nuc.nix
-          ./profiles/alex.nix
-          syncthingClient
-        ];
-        "alex@nas" = mkHome "x86_64-linux" "alex" [
-          ./profiles/alex.nix
-        ];
+        "alex@desktop" = mkHome "x86_64-linux" ./os/omarchy.nix [ ./hosts/desktop.nix ];
+        "alex@tower" = mkHome "x86_64-linux" ./os/omarchy.nix [ ./hosts/tower.nix ];
+        "alex@nuc" = mkHome "x86_64-linux" ./os/ubuntu.nix [ ./hosts/nuc.nix ];
+        "alex@orion" = mkHome "aarch64-linux" ./os/ubuntu.nix [ ./hosts/orion.nix ];
       };
     };
 }

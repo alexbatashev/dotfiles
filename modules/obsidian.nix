@@ -1,8 +1,13 @@
-{ lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
   programs.obsidian = {
     enable = true;
-    package = pkgs.obsidian;
+    package = if config.os.shipsUserTools then null else pkgs.obsidian;
     vaults."Obsidian Notes" = {
       target = "Obsidian Notes";
     };

@@ -12,6 +12,11 @@
     lfs.enable = true;
 
     settings = {
+      user = {
+        name = "Alexander Batashev";
+        email = "alex@batashev.me";
+      };
+
       alias = {
         # View abbreviated SHA, description, and history graph of the latest 20 commits
         l = "log --pretty=oneline -n 20 --graph --abbrev-commit";
@@ -63,8 +68,8 @@
       # config file ... Permission denied"). Answer "No" to gh's
       # "Authenticate Git with your GitHub credentials?" prompt.
       credential = {
-        "https://github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
-        "https://gist.github.com".helper = "!${pkgs.gh}/bin/gh auth git-credential";
+        "https://github.com".helper = "!gh auth git-credential";
+        "https://gist.github.com".helper = "!gh auth git-credential";
       };
 
       gc.auto = 256;

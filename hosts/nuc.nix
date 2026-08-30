@@ -40,10 +40,6 @@
   # ../modules/nas-mount.nix for the one-time `rbw` bootstrap.
   services.nasMount.enable = true;
 
-  # Standalone home-manager on a non-NixOS host: integrate with the system's
-  # session/systemd so the user service picks up the right environment.
-  targets.genericLinux.enable = true;
-
   #services.t3code = {
   #  enable = true;
   #  # nuc's Tailscale IP — the server is only reachable over the tailnet.

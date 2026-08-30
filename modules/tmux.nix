@@ -1,7 +1,8 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   programs.tmux = {
     enable = true;
+    package = if config.os.shipsUserTools then null else pkgs.tmux;
     prefix = "C-a";
     terminal = "screen-256color";
 

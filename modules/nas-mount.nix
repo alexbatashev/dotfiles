@@ -210,12 +210,13 @@ in
     }
 
     (lib.mkIf (cfg.enable && pkgs.stdenv.hostPlatform.isLinux) {
-      home.packages =
-        [ cfg.giobPackage ]
-        ++ lib.optionals cfg.bitwarden.enable [
-          cfg.bitwarden.package
-          cfg.bitwarden.pinentryPackage
-        ];
+      home.packages = [
+        cfg.giobPackage
+      ]
+      ++ lib.optionals cfg.bitwarden.enable [
+        cfg.bitwarden.package
+        cfg.bitwarden.pinentryPackage
+      ];
 
       # Fetch the password from Bitwarden and (re)write the 0600 pass file.
       # Non-fatal: if the vault is locked/offline we warn and keep any existing
