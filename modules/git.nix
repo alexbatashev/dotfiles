@@ -5,7 +5,7 @@
 
     # SSH-based commit signing
     signing = {
-      key = if pkgs.stdenv.isDarwin then "~/.ssh/id_ecdsa" else "~/.ssh/id_ed25519";
+      key = if pkgs.stdenv.hostPlatform.isDarwin then "~/.ssh/id_ecdsa" else "~/.ssh/id_ed25519";
       signByDefault = true;
     };
 

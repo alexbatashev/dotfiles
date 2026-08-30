@@ -204,12 +204,12 @@ in
 
   config = lib.mkMerge [
     {
-      warnings = lib.optional (cfg.enable && !pkgs.stdenv.isLinux) (
+      warnings = lib.optional (cfg.enable && !pkgs.stdenv.hostPlatform.isLinux) (
         "services.nasMount is enabled but only supported on Linux (GVFS); it is a no-op here."
       );
     }
 
-    (lib.mkIf (cfg.enable && pkgs.stdenv.isLinux) {
+    (lib.mkIf (cfg.enable && pkgs.stdenv.hostPlatform.isLinux) {
       home.packages =
         [ cfg.giobPackage ]
         ++ lib.optionals cfg.bitwarden.enable [

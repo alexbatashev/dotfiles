@@ -7,7 +7,7 @@
 }:
 {
   home.username = username;
-  home.homeDirectory = if pkgs.stdenv.isDarwin then "/Users/${username}" else "/home/${username}";
+  home.homeDirectory = if pkgs.stdenv.hostPlatform.isDarwin then "/Users/${username}" else "/home/${username}";
 
   home.stateVersion = "25.11";
 
@@ -65,7 +65,7 @@
 
   programs.home-manager.enable = true;
 
-  home.activation.migrateLegacyDarwinAppsLink = lib.mkIf pkgs.stdenv.isDarwin (
+  home.activation.migrateLegacyDarwinAppsLink = lib.mkIf pkgs.stdenv.hostPlatform.isDarwin (
     lib.hm.dag.entryBefore [ "installPackages" ] ''
       target="$HOME/Applications/Home Manager Apps"
       if [ -L "$target" ] && [[ "$(readlink "$target")" == /nix/store/* ]]; then

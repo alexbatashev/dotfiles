@@ -15,3 +15,5 @@
 - Plans must be concrete steps. "Split dialect into pieces" is not a plan, it is a wishlist item.
   Good plan must have a measurable goal, examples of before and after result, motivation and concrete
   steps to reach the goal.
+- Skills with "apply always" or "must use" must apply exactly as described - always, unconditionally. Never skip them.
+- Load skills every time a trigger fires. Term "conditional" does not mean "optional". Skipping them is a violation of such conditions.
