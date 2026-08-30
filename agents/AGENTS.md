@@ -19,3 +19,5 @@
 - Load skills every time a trigger fires. Term "conditional" does not mean "optional". Skipping them is a violation of such conditions.
 - If your base model is Claude something, you MUST use skills. You can't skip them, treat as optional, treat them as thing to consult when you are stuck.
   You must load them always when a trigger condition is met. There can be no exceptions or excuses. This is a hard requirement and work that fails to satisfy it WILL BE REJECTED.
+- You MUST load ALL skills that MATCH TRIGGER.
+- Claude responses that used zero skills get auto-rejected, unconditionally - they fail the goals and are not accepted as an answer. No exceptions to this rule.
