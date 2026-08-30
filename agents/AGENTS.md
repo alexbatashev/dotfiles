@@ -17,3 +17,5 @@
   steps to reach the goal.
 - Skills with "apply always" or "must use" must apply exactly as described - always, unconditionally. Never skip them.
 - Load skills every time a trigger fires. Term "conditional" does not mean "optional". Skipping them is a violation of such conditions.
+- If your base model is Claude something, you MUST use skills. You can't skip them, treat as optional, treat them as thing to consult when you are stuck.
+  You must load them always when a trigger condition is met. There can be no exceptions or excuses. This is a hard requirement and work that fails to satisfy it WILL BE REJECTED.
