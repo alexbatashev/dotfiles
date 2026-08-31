@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>[Plan title]</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --surface: #ffffff;
+      --surface-2: #f0f2f5;
+      --text: #20242c;
+      --muted: #687080;
+      --border: #dce0e7;
+      --accent: #3157d5;
+      --accent-soft: #e9eeff;
+      --good: #16794b;
+      --good-soft: #e4f6ed;
+      --warn: #9a5b00;
+      --warn-soft: #fff2d6;
+      --code: #f2f4f8;
+      --shadow: 0 8px 30px rgb(25 35 55 / 7%);
+      --radius: 14px;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #101216;
+        --surface: #181b21;
+        --surface-2: #20242c;
+        --text: #e9ebf0;
+        --muted: #a1a8b5;
+        --border: #303641;
+        --accent: #91a8ff;
+        --accent-soft: #242e55;
+        --good: #71d6a5;
+        --good-soft: #163a2b;
+        --warn: #f2bd65;
+        --warn-soft: #402f14;
+        --code: #12151a;
+        --shadow: 0 8px 30px rgb(0 0 0 / 24%);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.65;
+    }
+    a { color: var(--accent); }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code {
+      padding: .12em .32em;
+      border-radius: 5px;
+      background: var(--code);
+      font-size: .9em;
+    }
+    pre {
+      margin: 1rem 0 0;
+      padding: 1rem 1.1rem;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--code);
+      font-size: .86rem;
+      line-height: 1.55;
+      tab-size: 2;
+    }
+    pre code { padding: 0; background: none; font-size: inherit; }
+    .kw { color: #8250df; }
+    .ty { color: #0969da; }
+    .str { color: #0a7a33; }
+    .num { color: #a1460b; }
+    .com { color: #6e7781; font-style: italic; }
+    .mac { color: #9a6700; }
+    @media (prefers-color-scheme: dark) {
+      .kw { color: #d2a8ff; }
+      .ty { color: #79c0ff; }
+      .str { color: #a5d6ff; }
+      .num { color: #ffa657; }
+      .com { color: #8b949e; }
+      .mac { color: #d2a8ff; }
+    }
+
+    .page { width: min(920px, calc(100% - 32px)); margin: 0 auto; }
+    header { padding: 64px 0 28px; }
+    .eyebrow {
+      margin: 0 0 10px;
+      color: var(--accent);
+      font-size: .76rem;
+      font-weight: 750;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 { line-height: 1.2; letter-spacing: -.02em; }
+    h1 { max-width: 760px; margin: 0; font-size: clamp(2rem, 7vw, 3.7rem); }
+    h2 { margin: 0 0 18px; font-size: clamp(1.35rem, 4vw, 1.8rem); }
+    h3 { margin: 0; font-size: 1.08rem; }
+    .lede { max-width: 720px; margin: 18px 0; color: var(--muted); font-size: 1.08rem; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--muted);
+      font-size: .78rem;
+      font-weight: 650;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      border-block: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(12px);
+    }
+    nav .page { display: flex; gap: 20px; overflow-x: auto; scrollbar-width: none; }
+    nav a {
+      flex: 0 0 auto;
+      padding: 12px 0;
+      color: var(--muted);
+      font-size: .82rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    nav a:hover { color: var(--accent); }
+    main { padding: 22px 0 64px; }
+    section { padding: 34px 0; scroll-margin-top: 48px; }
+    .card {
+      padding: 22px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .goal { border-left: 4px solid var(--accent); }
+    .goal p { margin: 0; font-size: 1.08rem; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .state { box-shadow: none; }
+    .state p { margin: 8px 0 0; color: var(--muted); }
+    .state.target { border-color: color-mix(in srgb, var(--good) 45%, var(--border)); }
+    .label {
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .steps { display: grid; gap: 14px; counter-reset: step; }
+    .step {
+      position: relative;
+      padding: 22px 22px 22px 66px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      counter-increment: step;
+    }
+    .step::before {
+      content: counter(step);
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: .8rem;
+      font-weight: 800;
+    }
+    .step > p { margin: 7px 0 0; color: var(--muted); }
+    .step ul { margin-bottom: 0; padding-left: 20px; }
+    .proof {
+      margin-top: 14px;
+      padding: 11px 13px;
+      border-radius: 8px;
+      background: var(--good-soft);
+      color: var(--good);
+      font-size: .9rem;
+    }
+    .proof code { background: color-mix(in srgb, var(--good-soft) 72%, var(--surface)); }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); font-size: .92rem; }
+    th, td { padding: 13px 15px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+    th { background: var(--surface-2); font-size: .76rem; letter-spacing: .04em; }
+    tr:last-child td { border-bottom: 0; }
+    .callout {
+      padding: 16px 18px;
+      border: 1px solid color-mix(in srgb, var(--warn) 45%, var(--border));
+      border-radius: 10px;
+      background: var(--warn-soft);
+      color: var(--warn);
+    }
+    .clean { margin: 0; padding-left: 20px; }
+    footer { padding: 0 0 48px; color: var(--muted); font-size: .8rem; }
+
+    @media (max-width: 620px) {
+      .page { width: min(100% - 22px, 920px); }
+      header { padding-top: 38px; }
+      .grid { grid-template-columns: 1fr; }
+      .card, .step { border-radius: 11px; }
+      .step { padding: 18px 16px 18px 54px; }
+      .step::before { top: 17px; left: 14px; }
+      th, td { min-width: 150px; padding: 11px 12px; }
+    }
+
+    @media print {
+      :root { --bg: #fff; --surface: #fff; --text: #111; --muted: #444; --border: #ccc; --shadow: none; }
+      nav { display: none; }
+      .page { width: 100%; }
+      header { padding-top: 0; }
+      section { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="page">
+    <p class="eyebrow">[Project] / Plan</p>
+    <h1>[Outcome-focused plan title]</h1>
+    <p class="lede">[One sentence stating what changes, for whom, and why.]</p>
+    <div class="meta">
+      <span class="pill">Status: proposed</span>
+      <span class="pill">Updated: [YYYY-MM-DD]</span>
+      <span class="pill">Owner: [team or person]</span>
+      <span class="pill">Scope: [small, medium, or large]</span>
+    </div>
+  </header>
+
+  <nav aria-label="Plan sections">
+    <div class="page">
+      <a href="#goal">Goal</a>
+      <a href="#state">Before and after</a>
+      <a href="#work">Implementation</a>
+      <a href="#verification">Verification</a>
+      <a href="#risks">Risks</a>
+      <a href="#scope">Scope</a>
+    </div>
+  </nav>
+
+  <main class="page">
+    <section id="goal">
+      <h2>Goal</h2>
+      <div class="card goal">
+        <p>[Describe the observable end state. Name a user-visible or system-visible result, not an activity.]</p>
+      </div>
+    </section>
+
+    <section id="state">
+      <h2>Before and after</h2>
+      <div class="grid">
+        <article class="card state">
+          <span class="label">Current</span>
+          <h3>[Current behavior]</h3>
+          <p>[Concrete limitation, failure, or cost.]</p>
+        </article>
+        <article class="card state target">
+          <span class="label">Target</span>
+          <h3>[Target behavior]</h3>
+          <p>[Concrete result with the old limitation removed.]</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="work">
+      <h2>Implementation</h2>
+      <div class="steps">
+        <article class="step">
+          <h3>[Step outcome]</h3>
+          <p>[Why this unit comes first and what becomes possible afterward.]</p>
+          <ul>
+            <li>[Change a named file, type, command, interface, or behavior.]</li>
+            <li>[Remove or migrate the old path when applicable.]</li>
+          </ul>
+          <div class="proof"><strong>Prove it:</strong> <code>[exact command]</code> [and expected result].</div>
+        </article>
+
+        <article class="step">
+          <h3>[Next independently verifiable outcome]</h3>
+          <p>[The boundary and motivation for this step.]</p>
+          <ul>
+            <li>[Concrete change.]</li>
+          </ul>
+          <div class="proof"><strong>Prove it:</strong> <code>[exact command]</code> [and expected result].</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="code">
+      <h2>Code shape</h2>
+      <p>[Keep this section only when an API or data structure makes the proposed design clearer.]</p>
+      <div class="grid">
+        <article>
+          <span class="label">C++</span>
+          <pre><code class="language-cpp">struct Result {
+  std::string value;
+};
+
+Result run(const Request&amp; request) {
+  return {.value = request.name()};
+}</code></pre>
+        </article>
+        <article>
+          <span class="label">Rust</span>
+          <pre><code class="language-rust">struct Result {
+    value: String,
+}
+
+fn run(request: &amp;Request) -&gt; Result {
+    Result { value: request.name().into() }
+}</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section id="verification">
+      <h2>Verification</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Check</th><th>Method</th><th>Pass condition</th></tr></thead>
+          <tbody>
+            <tr><td>[Public behavior]</td><td><code>[command or action]</code></td><td>[Observed result]</td></tr>
+            <tr><td>[Regression boundary]</td><td><code>[command or action]</code></td><td>[Observed result]</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="risks">
+      <h2>Risks</h2>
+      <div class="callout"><strong>[Risk].</strong> [Trigger, impact, and how the design prevents or detects it.]</div>
+    </section>
+
+    <section id="scope">
+      <h2>Scope</h2>
+      <div class="grid">
+        <article class="card state">
+          <span class="label">Included</span>
+          <ul class="clean"><li>[Explicit deliverable.]</li></ul>
+        </article>
+        <article class="card state">
+          <span class="label">Not included</span>
+          <ul class="clean"><li>[Explicit non-goal and why it stays out.]</li></ul>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="page">[Project] · [source revision or evidence date] · [plan file path]</footer>
+
+  <script>
+    (() => {
+      const words = {
+        cpp: new Set('alignas alignof and asm auto bool break case catch char class concept const constexpr consteval constinit continue co_await co_return co_yield decltype default delete do double else enum explicit export extern false float for friend goto if inline int long mutable namespace new noexcept not nullptr operator or private protected public register reinterpret_cast requires return short signed sizeof static static_assert struct switch template this thread_local throw true try typedef typeid typename union unsigned using virtual void volatile wchar_t while'.split(' ')),
+        rust: new Set('as async await break const continue crate dyn else enum extern false fn for if impl in let loop match mod move mut pub ref return self Self static struct super trait true type unsafe use where while'.split(' '))
+      };
+      const types = new Set('bool char double float int long short signed size_t string u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize f32 f64 str String Vec Option Result Box'.split(' '));
+      const token = /\/\/[^\n]*|\/\*[\s\S]*?\*\/|r#*"[\s\S]*?"#*|b?"(?:\\.|[^"\\])*"|b?'(?:\\.|[^'\\])*'|#\s*[A-Za-z_]\w*|'[A-Za-z_]\w*|\b(?:0x[\dA-Fa-f](?:_?[\dA-Fa-f])*|0b[01](?:_?[01])*|\d(?:_?\d)*(?:\.\d(?:_?\d)*)?)\b|\b[A-Za-z_]\w*\b/g;
+      const escape = text => text.replace(/[&<>]/g, char => ({'&': '&amp;', '<': '&lt;', '>': '&gt;'}[char]));
+      document.querySelectorAll('code.language-cpp, code.language-rust').forEach(code => {
+        const language = code.classList.contains('language-rust') ? 'rust' : 'cpp';
+        const source = code.textContent;
+        let result = '';
+        let end = 0;
+        for (const match of source.matchAll(token)) {
+          result += escape(source.slice(end, match.index));
+          const value = match[0];
+          let kind = '';
+          if (value.startsWith('//') || value.startsWith('/*')) kind = 'com';
+          else if (/^(?:r#*|b)?"|^b?'/.test(value)) kind = 'str';
+          else if (/^#/.test(value)) kind = 'mac';
+          else if (/^\d|^0[xb]/.test(value)) kind = 'num';
+          else if (words[language].has(value)) kind = 'kw';
+          else if (types.has(value) || /^[A-Z]\w*$/.test(value)) kind = 'ty';
+          result += kind ? `<span class="${kind}">${escape(value)}</span>` : escape(value);
+          end = match.index + value.length;
+        }
+        code.innerHTML = result + escape(source.slice(end));
+      });
+    })();
+  </script>
+</body>
+</html>
