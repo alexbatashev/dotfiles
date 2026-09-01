@@ -1,0 +1,12 @@
+[Unit]
+Description=Mount the NAS home share through GVFS
+After=default.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=%h/.local/libexec/nas-gvfs-mount
+ExecStop=%h/.local/libexec/nas-gvfs-unmount
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+case $(uname -s) in
+    Darwin)
+        domain=gui/$(id -u)
+        plist=$HOME/Library/LaunchAgents/dev.rig.syncthing.plist
+        launchctl bootout "$domain/dev.rig.syncthing" 2>/dev/null || true
+        launchctl bootstrap "$domain" "$plist"
+        ;;
+    Linux)
+        systemctl --user daemon-reload
+        systemctl --user enable --now syncthing.service
+        ;;
+esac

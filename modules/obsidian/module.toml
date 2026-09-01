@@ -1,0 +1,4 @@
+packages = ["obsidian", "fira-font", "jetbrains-mono-nerd-font", "localsend"]
+
+[[hook]]
+after = ".local/libexec/rig-install-obsidian-remotely-save"

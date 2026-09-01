@@ -1,0 +1,1 @@
+packages = ["mise", "gh", "claude", "codex", "opencode"]

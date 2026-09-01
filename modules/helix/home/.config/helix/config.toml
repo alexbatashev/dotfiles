@@ -1,0 +1,34 @@
+theme = "darcula_fixed"
+
+[editor]
+completion-replace = true
+cursorline = true
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.indent-guides]
+render = true
+skip-levels = 1
+
+[editor.inline-diagnostics]
+cursor-line = "warning"
+other-lines = "error"
+
+[editor.statusline]
+right = [
+  "diagnostics",
+  "spacer",
+  "file-type",
+  "file-encoding",
+  "file-line-ending",
+  "spacer",
+  "selections",
+  "register",
+  "spacer",
+  "position",
+  "position-percentage",
+  "total-line-numbers",
+]

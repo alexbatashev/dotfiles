@@ -1,0 +1,16 @@
+modules = [
+  "agents",
+  "core-tools",
+  "fish",
+  "ghostty",
+  "git",
+  "helix",
+  "herdr",
+  "mise",
+  "obsidian",
+  "scripts",
+  "syncthing",
+  "tmux",
+  "zed",
+  "macos",
+]

@@ -1,0 +1,26 @@
+#!/bin/sh
+set -eu
+
+vault_dir=$HOME/Obsidian\ Notes/.obsidian
+plugin_dir=$vault_dir/plugins/remotely-save
+plugins_file=$vault_dir/community-plugins.json
+temp_dir=$(mktemp -d)
+trap 'rm -rf "$temp_dir"' EXIT
+
+mkdir -p "$plugin_dir"
+curl -fsSL https://api.github.com/repos/remotely-save/remotely-save/releases/latest -o "$temp_dir/release.json"
+tag=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["tag_name"])' "$temp_dir/release.json")
+base_url=https://github.com/remotely-save/remotely-save/releases/download/$tag
+curl -fsSL "$base_url/main.js" -o "$plugin_dir/main.js"
+curl -fsSL "$base_url/manifest.json" -o "$plugin_dir/manifest.json"
+curl -fsSL "$base_url/styles.css" -o "$plugin_dir/styles.css"
+
+python3 - "$plugins_file" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+plugins = json.loads(path.read_text()) if path.exists() else []
+path.write_text(json.dumps(sorted(set(plugins) | {"remotely-save"}), indent=2) + "\n")
+PY

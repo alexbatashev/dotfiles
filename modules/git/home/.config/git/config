@@ -1,0 +1,76 @@
+[alias]
+	aliases = config --get-regexp alias
+	contributors = shortlog --summary --numbered
+	credit = !f() { git commit --amend --author "$1 <$2>" -C HEAD; }; f
+	fc = !f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f
+	fm = !f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=$1; }; f
+	fpush = push --force-with-lease
+	l = log --pretty=oneline -n 20 --graph --abbrev-commit
+	s = status -s
+
+[branch]
+	sort = -committerdate
+
+[column]
+	ui = auto
+
+[commit]
+	gpgSign = true
+	verbose = true
+
+[core]
+	autocrlf = input
+	editor = hx
+	excludesfile = ~/dotfiles/.gitignore_default
+	fscache = true
+	preloadindex = true
+	trustctime = false
+	whitespace = space-before-tab,-indent-with-non-tab,trailing-space
+
+[credential "https://gist.github.com"]
+	helper = !gh auth git-credential
+
+[credential "https://github.com"]
+	helper = !gh auth git-credential
+
+[diff]
+	algorithm = histogram
+	colorMoved = plain
+	mnemonicPrefix = true
+
+[diff "bin"]
+	textconv = hexdump -v -C
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	process = git-lfs filter-process
+	required = true
+	smudge = git-lfs smudge -- %f
+
+[gc]
+	auto = 256
+
+[gpg]
+	format = ssh
+
+[merge]
+	log = true
+	renamelimit = 3129
+
+[pull]
+	rebase = true
+
+[push]
+	autoSetupRemote = true
+
+[rerere]
+	autoupdate = true
+	enabled = true
+
+[tag]
+	gpgSign = true
+
+[user]
+	email = alex@batashev.me
+	name = Alexander Batashev
+	signingKey = ~/.ssh/id_ed25519

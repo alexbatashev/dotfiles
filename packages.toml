@@ -1,0 +1,185 @@
+[bat]
+arch = "bat"
+macos = "bat"
+
+[bazelisk]
+arch = "bazelisk"
+macos = "bazelisk"
+
+[bloaty]
+arch = "bloaty"
+macos = "bloaty"
+
+[btop]
+arch = "btop"
+macos = "btop"
+
+[claude]
+arch = false
+mise = "claude"
+
+[cmake]
+arch = "cmake"
+macos = "cmake"
+
+[codex]
+arch = false
+mise = "codex"
+
+[curl]
+arch = "curl"
+macos = "curl"
+
+[eza]
+arch = "eza"
+macos = "eza"
+
+[fd]
+arch = false
+macos = "fd"
+
+[fira-font]
+arch = false
+macos = "font-fira-sans"
+
+[fish]
+arch = "fish"
+macos = "fish"
+
+[fzf]
+arch = false
+macos = "fzf"
+
+[ghostty]
+arch = "ghostty"
+macos = "ghostty"
+
+[glib]
+arch = "glib2"
+ubuntu = "libglib2.0-bin"
+
+[gvfs-smb-backend]
+arch = "gvfs-smb"
+ubuntu = "gvfs-backends"
+
+[gh]
+arch = false
+mise = "gh"
+
+[herdr]
+arch = false
+macos = "herdr"
+
+[git]
+arch = "git"
+macos = "git"
+
+[git-lfs]
+arch = "git-lfs"
+macos = "git-lfs"
+
+[graphviz]
+arch = "graphviz"
+macos = "graphviz"
+
+[helix]
+arch = "helix"
+macos = "helix"
+
+[jetbrains-mono-nerd-font]
+arch = false
+macos = "font-jetbrains-mono-nerd-font"
+
+[jujutsu]
+arch = "jujutsu"
+macos = "jj"
+
+[lazygit]
+arch = false
+macos = "lazygit"
+
+[localsend]
+arch = false
+macos = "localsend"
+
+[mermaid-cli]
+arch = "mermaid-cli"
+macos = "mermaid-cli"
+
+[mise]
+arch = false
+macos = "mise"
+
+[ninja]
+arch = "ninja"
+macos = "ninja"
+
+[node]
+arch = "nodejs"
+macos = "node"
+
+[obsidian]
+arch = false
+macos = "obsidian"
+
+[opencode]
+arch = false
+mise = "opencode"
+
+[pnpm]
+arch = "pnpm"
+macos = "pnpm"
+
+[python]
+arch = "python"
+macos = "python"
+
+[ripgrep]
+arch = false
+macos = "ripgrep"
+
+[rust-analyzer]
+arch = "rust-analyzer"
+macos = "rust-analyzer"
+
+[rustup]
+arch = "rustup"
+macos = "rustup"
+
+[rbw]
+
+[starpls]
+arch = "starpls"
+macos = "withered-magic/brew/starpls"
+
+[syncthing]
+arch = "syncthing"
+macos = "syncthing"
+
+[tmux]
+arch = false
+macos = "tmux"
+
+[unzip]
+arch = false
+macos = "unzip"
+
+[uv]
+arch = "uv"
+macos = "uv"
+
+[wget]
+arch = "wget"
+macos = "wget"
+
+[yazi]
+arch = "yazi"
+macos = "yazi"
+
+[zed]
+arch = false
+macos = "zed"
+
+[zoxide]
+arch = "zoxide"
+macos = "zoxide"

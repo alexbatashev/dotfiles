@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+pass_file=${XDG_CONFIG_HOME:-"$HOME/.config"}/nas/smb-pass
+mkdir -p "$(dirname "$pass_file")"
+chmod 700 "$(dirname "$pass_file")"
+
+if smb_password=$(rbw get DiskStation 2>/dev/null) && [ -n "$smb_password" ]; then
+    umask 077
+    printf %s "$smb_password" > "$pass_file"
+else
+    echo "nas-mount: Bitwarden is locked; keeping the existing password file" >&2
+fi
+
+systemctl --user daemon-reload
+systemctl --user enable --now nas-mount.service

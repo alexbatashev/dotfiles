@@ -1,0 +1,59 @@
+#!/bin/sh
+set -eu
+
+unset DISPLAY WAYLAND_DISPLAY || true
+bridge=$XDG_RUNTIME_DIR/gvfs
+share=smb-share:server=nas.siren-pollux.ts.net,share=home
+share_path=$bridge/$share
+pass_file=${XDG_CONFIG_HOME:-"$HOME/.config"}/nas/smb-pass
+mount_point=$HOME/mnt/nas
+
+if ! ls "$bridge" >/dev/null 2>&1; then
+    fusermount3 -u "$bridge" 2>/dev/null || fusermount -u "$bridge" 2>/dev/null || umount "$bridge" 2>/dev/null || true
+    systemctl --user reset-failed nas-gvfs-bridge 2>/dev/null || true
+    gvfsd_fuse=$(find /usr/lib /usr/libexec -name gvfsd-fuse -type f 2>/dev/null | head -n 1 || true)
+    if [ -n "$gvfsd_fuse" ]; then
+        mkdir -p "$bridge"
+        systemd-run --user --quiet --collect --unit=nas-gvfs-bridge --property=Restart=on-failure "$gvfsd_fuse" -f "$bridge" || true
+        i=0
+        while [ "$i" -lt 20 ] && ! ls "$bridge" >/dev/null 2>&1; do
+            sleep 0.5
+            i=$((i + 1))
+        done
+    fi
+fi
+
+if ! ls "$bridge" >/dev/null 2>&1; then
+    echo "nas-mount: no GVFS bridge at $bridge" >&2
+    exit 1
+fi
+
+if [ ! -d "$share_path" ]; then
+    if [ ! -r "$pass_file" ]; then
+        echo "nas-mount: no password file at $pass_file" >&2
+        exit 1
+    fi
+    printf '%s\n%s\n%s\n' alex '' "$(cat "$pass_file")" | gio mount smb://nas.siren-pollux.ts.net/home || true
+    i=0
+    while [ "$i" -lt 20 ] && [ ! -d "$share_path" ]; do
+        sleep 0.5
+        i=$((i + 1))
+    done
+fi
+
+if [ ! -d "$share_path" ]; then
+    echo "nas-mount: share did not appear at $share_path" >&2
+    exit 1
+fi
+
+mkdir -p "$(dirname "$mount_point")"
+if [ -L "$mount_point" ]; then
+    rm "$mount_point"
+elif [ -e "$mount_point" ]; then
+    if mountpoint -q "$mount_point" 2>/dev/null; then
+        echo "nas-mount: $mount_point is already a mount point" >&2
+        exit 1
+    fi
+    rmdir "$mount_point"
+fi
+ln -sfn "$share_path" "$mount_point"

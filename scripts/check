@@ -1,0 +1,47 @@
+#!/bin/sh
+set -eu
+
+root=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
+rig_bin=${RIG_BIN:-rig}
+temp_dir=$(mktemp -d)
+trap 'rm -rf "$temp_dir"' EXIT
+
+compose() {
+    host=$1
+    os=$2
+    output=$temp_dir/$host
+    "$rig_bin" compose --host "$host" --os "$os" --out "$output" "$root"
+    test -f "$output/home/.config/fish/config.fish"
+    test -f "$output/home/.config/git/config"
+    test -f "$output/home/.config/ghostty/config"
+    test -f "$output/home/.config/helix/config.toml"
+    test -f "$output/home/.config/tmux/tmux.conf"
+}
+
+compose macbook macos
+compose desktop linux:arch
+compose tower linux:arch
+compose nuc linux:ubuntu
+compose orion linux:ubuntu
+
+test -f "$temp_dir/macbook/home/Library/LaunchAgents/dev.rig.syncthing.plist"
+test -f "$temp_dir/macbook/etc/pam.d/sudo_local"
+test ! -e "$temp_dir/macbook/home/.config/systemd/user/syncthing.service"
+test -f "$temp_dir/desktop/home/.config/zed/settings.json"
+test -f "$temp_dir/tower/home/Obsidian Notes/.obsidian/core-plugins.json"
+test -f "$temp_dir/nuc/home/.config/systemd/user/nas-mount.service"
+test -f "$temp_dir/nuc/home/.local/share/applications/com.mitchellh.ghostty.desktop"
+test -f "$temp_dir/orion/home/.config/systemd/user/nas-mount.service"
+
+if rg -n -i 'n[i]x|home[-]manager' \
+    "$root/rig.toml" \
+    "$root/packages.toml" \
+    "$root/hosts" \
+    "$root/modules"
+then
+    exit 1
+fi
+
+if find "$root" -path "$root/.git" -prune -o -name '*.[n]ix' -print | grep -q .; then
+    exit 1
+fi

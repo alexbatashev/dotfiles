@@ -1,0 +1,6 @@
+when.os = ["linux"]
+packages = ["glib", "gvfs", "gvfs-smb-backend", "pinentry-curses", "rbw"]
+
+[[hook]]
+after = ".local/libexec/rig-configure-nas-mount"
+when = "always"

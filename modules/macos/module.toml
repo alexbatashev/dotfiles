@@ -1,0 +1,6 @@
+when.os = ["macos"]
+
+[defaults.NSGlobalDomain]
+InitialKeyRepeat = 15
+KeyRepeat = 1
+ApplePressAndHoldEnabled = false

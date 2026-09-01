@@ -1,0 +1,7 @@
+[[hook]]
+after = ".local/libexec/rig-link-agents"
+when = "always"
+
+[[hook]]
+after = ".local/libexec/rig-configure-ai-providers"
+when = "always"

@@ -1,0 +1,4 @@
+packages = ["syncthing"]
+
+[[hook]]
+after = ".local/libexec/rig-reload-syncthing"

@@ -1,0 +1,2 @@
+[user]
+	signingKey = ~/.ssh/id_ecdsa

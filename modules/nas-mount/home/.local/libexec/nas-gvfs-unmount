@@ -1,0 +1,7 @@
+#!/bin/sh
+set -u
+
+unset DISPLAY WAYLAND_DISPLAY || true
+gio mount -u smb://nas.siren-pollux.ts.net/home 2>/dev/null || true
+rm -f "$HOME/mnt/nas" 2>/dev/null || true
+systemctl --user stop nas-gvfs-bridge 2>/dev/null || true

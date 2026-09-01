@@ -1,0 +1,4 @@
+font-size = 20
+keybind = global:cmd+backquote=toggle_quick_terminal
+shell-integration-features = true
+theme = JetBrains Darcula

@@ -1,0 +1,45 @@
+#!/bin/sh
+set -eu
+
+config_home=${XDG_CONFIG_HOME:-"$HOME/.config"}
+repo=$(sed -n '1p' "$config_home/rig/repo")
+source_dir=$repo/agents
+
+test -f "$source_dir/AGENTS.md"
+test -d "$source_dir/skills"
+
+link_file() {
+    source=$1
+    target=$2
+    mkdir -p "$(dirname "$target")"
+    if [ -e "$target" ] && [ ! -L "$target" ]; then
+        echo "refusing to replace $target" >&2
+        exit 1
+    fi
+    ln -sfn "$source" "$target"
+}
+
+link_skills() {
+    target_dir=$1
+    mkdir -p "$target_dir"
+    for target in "$target_dir"/*; do
+        [ -L "$target" ] || continue
+        old=$(readlink "$target")
+        case "$old" in
+            "$source_dir/skills/"*)
+                [ -e "$old" ] || rm "$target"
+                ;;
+        esac
+    done
+    for source in "$source_dir"/skills/*; do
+        [ -d "$source" ] || continue
+        link_file "$source" "$target_dir/$(basename "$source")"
+    done
+}
+
+link_file "$source_dir/AGENTS.md" "$HOME/.claude/CLAUDE.md"
+link_file "$source_dir/AGENTS.md" "$HOME/.codex/AGENTS.md"
+link_file "$source_dir/AGENTS.md" "$config_home/opencode/AGENTS.md"
+link_skills "$HOME/.claude/skills"
+link_skills "$HOME/.codex/skills"
+link_skills "$config_home/opencode/skills"
