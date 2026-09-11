@@ -126,6 +126,9 @@ macos = "obsidian"
 arch = false
 mise = "opencode"
 
+[pinentry-curses]
+arch = "pinentry"
+
 [pnpm]
 arch = "pnpm"
 macos = "pnpm"

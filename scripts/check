@@ -21,7 +21,7 @@ compose() {
 compose macbook macos
 compose desktop linux:arch
 compose tower linux:arch
-compose strix linux:arch
+compose strix linux:omarchy:arch
 compose nuc linux:ubuntu
 compose orion linux:ubuntu
 
@@ -32,7 +32,8 @@ test -f "$temp_dir/desktop/home/.config/zed/settings.json"
 test -f "$temp_dir/tower/home/Obsidian Notes/.obsidian/core-plugins.json"
 test -f "$temp_dir/nuc/home/.config/systemd/user/nas-mount.service"
 test -f "$temp_dir/nuc/home/.local/share/applications/com.mitchellh.ghostty.desktop"
-test -f "$temp_dir/strix/home/.config/systemd/user/nas-mount.service"
+test ! -e "$temp_dir/strix/home/.config/systemd/user/nas-mount.service"
+test ! -e "$temp_dir/strix/home/.local/libexec/rig-configure-nas-mount"
 test -f "$temp_dir/strix/home/.local/share/applications/com.mitchellh.ghostty.desktop"
 test -f "$temp_dir/orion/home/.config/systemd/user/nas-mount.service"
 

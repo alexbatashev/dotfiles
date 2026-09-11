@@ -7,7 +7,6 @@ modules = [
   "helix",
   "herdr",
   "mise",
-  "nas-mount",
   "nuc",
   "scripts",
   "syncthing",
