@@ -48,9 +48,7 @@ Whenever you are asked to follow a particular plan, you need to follow the proto
 - Read the plan and attached spec if it exists.
 - Verify the plan item is unimplemented and the changes are still require.
 - Identify steps to reach the spec goal and set them as todo items. Make sure path to the spec survives context compaction.
-- For each step make an isolated change that accurately follows the spec. After step is complete, start a review subagent with
-  clear context that points to the spec and identifies bugs and spec conformance. Use model specified by the user. If none
-  specified, use the same model as you are. Once review is back, verify findings and fix them. When all issues are fixed, make a new commit for this stage.
+- For each step make an isolated change that follows the spec. Review the diff against the spec and run the relevant checks in the main session. Fix verified issues, then commit the stage. Use a review subagent only when the user explicitly requests independent review; do not spawn one after every step by default.
 - When entire spec is implemented, update the plan to mark this item as implemented.
 
 For long-running tasks use **show-me-your-work** skill.

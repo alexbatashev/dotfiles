@@ -1,0 +1,15 @@
+modules = [
+  "agents",
+  "core-tools",
+  "fish",
+  "ghostty",
+  "git",
+  "helix",
+  "herdr",
+  "mise",
+  "nas-mount",
+  "nuc",
+  "scripts",
+  "syncthing",
+  "tmux",
+]

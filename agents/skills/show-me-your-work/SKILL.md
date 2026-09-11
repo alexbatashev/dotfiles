@@ -8,8 +8,7 @@ disable-model-invocation: true
 
 For work a human reviews after the fact, a decision trail lets them reconstruct what was decided, why, and on what evidence, without rerunning the work or reading the whole transcript. Keep one canonical log so the trail is consistent and a future agent can find it.
 
-Unless specified otherwise, use `~/project-plans/<project name>/<plan name>` to store the logs. If the task is to implement
-a plan, use the plan directory. Otherwise, create a new plan directory and highlight it in the last message for user.
+Unless specified otherwise, use `~/project-plans/<project name>/_trails/<date>-<task name>.tsv` to store the logs.
 
 ## The format
 
@@ -65,16 +64,11 @@ At the end of the run, before handing back, check the log told the truth. Read t
 
 Fix the log, not the story. If the work diverged from what a row claims, the row is wrong.
 
-## Cross-model review of the trail
+## Review before handing back
 
-Before handing back, you must spawn a subagent on a different model family from the one that did the work. Self-review is not a substitute; the point is fresh eyes you cannot bring yourself. The subagent reads the audit trail and the run's transcript, then flags what the user should pay attention to. Not a redo of the work, a scan for what's suboptimal or risky.
+Check the trail against actual artifacts in the main session. Flag weak evidence, missing verification, scope drift, and unresolved risks. Point to specific rows when a flag needs the user's attention.
 
-- Decisions logged with weak or absent evidence.
-- Verification steps skipped or claimed without proof in the transcript.
-- Choices that look risky in hindsight (premature, scope-creeping, papering over a symptom).
-- Gaps the user would otherwise miss on a casual skim.
-
-Every reply for a run that produced a trail ends with an "Attention" section. Lead with the reviewer's model on its own line (`reviewed by <model>`), then list each flag pointing to specific rows or moments. "No flags" is a valid value; the model name is not. The self-audit asks if the log told the truth; this asks what the user should still scrutinize even when it did.
+Use a separate reviewer only when the user explicitly requests independent review. Give it the log and relevant evidence, not the entire transcript by default. Identify the reviewer only if one was used.
 
 ## Reviewing the trail
 
