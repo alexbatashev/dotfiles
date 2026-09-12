@@ -1,7 +1,6 @@
 ---
 name: principle-make-operations-idempotent
-description: "Apply when designing commands, lifecycle steps, or processing loops that run amid crashes, restarts, and retries. Converge to the same end state regardless of partial prior runs."
-disable-model-invocation: true
+description: Design commands and lifecycle operations to recover correctly after retries, crashes, or partial runs.
 ---
 
 # Make Operations Idempotent
@@ -13,7 +12,7 @@ Design operations so they converge to the correct state regardless of how many t
 **The pattern:**
 - Convergent startup: scan for existing state, clean stale artifacts, adopt live sessions
 - Content-based cleanup: compare by content equivalence, not creation order
-- Self-healing locks: use PID-based stale lock detection
+- Recover stale locks only after checking owner identity and liveness. A PID alone can be reused by another process.
 - Idempotent scheduling: failed work respawns cleanly, fresh input regenerated after each cycle
 
 **The test:**

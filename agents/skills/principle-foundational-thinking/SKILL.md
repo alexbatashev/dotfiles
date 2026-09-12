@@ -1,21 +1,16 @@
 ---
 name: principle-foundational-thinking
-description: "Apply before writing logic: choosing core types and data structures, sequencing scaffold-vs-feature work, asking what concurrent actors share. Get the data structures right so downstream code becomes obvious."
-disable-model-invocation: true
+description: "Choose data structures and shared foundations for the access patterns the task requires."
 ---
 
-# Foundational Thinking
+# Foundational thinking
 
-**Structural decisions** protect option value. **Code-level decisions** protect simplicity. Over-engineering is often a premature decision that closes doors. The right foundational data structure keeps doors open.
+Understand the data, invariants, and access patterns before adding logic around them. Choose a representation that makes the required operations clear and invalid states difficult to construct.
 
-**Data structures first.** Get the data shape right before writing logic. The right shape makes downstream code obvious. Define core types early, trace every access pattern, and choose structures that match the dominant paths. A data-structure change late is a rewrite. Early, it is often a one-line diff.
+Share types and domain rules when callers need the same contract. Similar lines alone do not justify an abstraction.
 
-At code level, DRY the structure, not every line. Types and data models should converge. Three similar statements still beat a premature abstraction. Prefer explicit over clever. Test behavior and edge cases, not line counts.
+Before sharing mutable state, identify who can change it and what concurrent changes mean. Separate ownership when the actors do not need one shared object.
 
-**Concurrency corollary.** Before sharing state between actors, ask "what happens if another actor modifies this concurrently?" If not "nothing", isolate.
+Build foundations early when the planned work depends on them. Reuse existing infrastructure. Do not add CI, a framework, or test infrastructure merely because it could help hypothetical future work.
 
-**Scaffold first.** If something helps every later phase, do it first. Ask "does every subsequent phase benefit from this existing?" CI, linting, test infrastructure, and shared types are scaffold. Sequence for option value: setup before features, tests before fixes. Keep commits small and single-purpose.
-
-Each increment should land a coherent abstraction or deepen one that exists. Do not spread a new capability across callers as special-case coordination.
-
-Subtraction comes before scaffolding: remove dead weight first, then lay foundations.
+Remove unnecessary complexity in the affected design when that makes the requested change smaller. Record unrelated cleanup for later.

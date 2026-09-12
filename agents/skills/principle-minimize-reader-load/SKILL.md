@@ -1,7 +1,6 @@
 ---
 name: principle-minimize-reader-load
-description: "Apply when reviewing or shaping code that's hard to trace. Count layers between question and answer, and hidden state in the reader's head; collapse one-caller wrappers and shrink mutable scope."
-disable-model-invocation: true
+description: Reduce unnecessary indirection and hidden mutable state in code that is hard to follow.
 ---
 
 # Minimize Reader Load
@@ -20,4 +19,4 @@ Maintainability is the work a reader must do to understand code. Track two axes:
 - **Name the invariant at the boundary,** not in every consumer, so the reader learns it once.
 - Before adding a layer or a piece of state, ask: does this reduce reader load somewhere else by at least as much?
 
-**The test:** Can a new reader answer "where does X come from?" and "what can change X?" in under 30 seconds? If not, cut layers or cut state.
+**The check:** Can a new reader find where a value comes from and what can change it without unnecessary tracing? Treat reading time as a clue, not a fixed limit. Improve ownership, naming, or structure where the difficulty comes from.

@@ -1,18 +1,14 @@
 ---
 name: principle-laziness-protocol
-description: "Apply when refactoring, evaluating diff size, or tempted to add abstractions, layers, or signal threading. Bias toward deletion and the smallest change that solves the problem."
-disable-model-invocation: true
+description: "Prefer the smallest maintainable change when refactoring or considering an abstraction."
 ---
 
-# Laziness Protocol
+# Laziness protocol
 
-Writing code is cheap for you, which makes over-engineering easy. Counter it by borrowing a human maintainer's fatigue. Aim for the most result with the least code and complexity.
+Look for a simpler solution before adding code. Prefer deletion when it preserves required behavior.
 
-- **Prefer deletion.** When asked to refactor or improve, look for removals before additions.
-- **Maintain a flat call hierarchy.** Avoid deep call chains. A rich interface that hides substantial work is not a deep call chain. If answering a question requires tracing through more than 3 files or layers, flatten it.
-- **Consolidate decisions.** Do not repeat the same choice in several places. Put it behind one source of truth and pass the result as a simple flag.
-- **Minimize the diff.** Make the smallest change that solves the problem. Fewer lines beat "elegant" boilerplate.
-- **Question the threading.** If a task asks you to pass a new signal through types, schemas, pipelines, or similar layers, stop and look for a more direct path.
-- **Sweat the small leaks.** Remove tiny pass-throughs, representation leaks, and duplicated choices before they spread. Small leaks compound into permanent coordination costs.
+Collapse wrappers and repeated coordination that add no useful boundary. Keep an abstraction when it hides meaningful complexity or owns a stable rule. File count alone does not establish that a design is too indirect.
 
-**Prime directive:** If a human developer would find the code exhausting to maintain, it is a bad solution. Be lazy. Stay simple.
+Centralize repeated decisions and pass their results clearly. Before threading a signal through many layers, check whether ownership or the data model offers a more direct solution.
+
+Optimize the change for the next reader and maintainer. Avoid speculative machinery and unrelated cleanup. Fewer lines are useful when they also reduce the work needed to understand the result.

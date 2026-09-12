@@ -1,6 +1,6 @@
 ---
 name: planning
-description: Use any time user asks to create, update or follow a plan or a spec
+description: Create, update, or follow a requested plan or specification.
 ---
 
 # Working with plans
@@ -14,10 +14,9 @@ synchronized across all machines that run agents.
 
 ### Plans
 
-Plans are meant to be read by humans. Use HTML and great visual fidelity to express initial user ideas
-in a structured way.
+Plans are meant to be read by humans. Use self-contained HTML by default and honor a requested format.
 
-Start every plan by copying [assets/plan.html](assets/plan.html). Keep its visual system, responsive layout,
+For an HTML plan, start from [assets/plan.html](assets/plan.html). Keep its visual system, responsive layout,
 light and dark themes, and syntax-highlighting script intact. Replace every bracketed placeholder, remove sample
 content that does not apply, and add sections only when the work needs them.
 
@@ -46,9 +45,9 @@ Specs are meant to be handed out to agents to implement. Write specs in Markdown
 Whenever you are asked to follow a particular plan, you need to follow the protocol:
 
 - Read the plan and attached spec if it exists.
-- Verify the plan item is unimplemented and the changes are still require.
+- Check which plan items remain and whether the proposed changes are still needed.
 - Identify steps to reach the spec goal and set them as todo items. Make sure path to the spec survives context compaction.
-- For each step make an isolated change that follows the spec. Review the diff against the spec and run the relevant checks in the main session. Fix verified issues, then commit the stage. Use a review subagent only when the user explicitly requests independent review; do not spawn one after every step by default.
+- Work in coherent units. Review the diff against the intended outcome and run relevant checks. Commit according to the user's request and the project's delivery workflow. Delegate large exploration under the user's agent preferences. Independent review is optional when requested, not a requirement after every step.
 - When entire spec is implemented, update the plan to mark this item as implemented.
 
-For long-running tasks use **show-me-your-work** skill.
+Record consequential discoveries and changes of approach with **show-me-your-work**. Put unrelated work in the shared side-quest list. Continue toward the requested outcome when evidence calls for a different method, and ask about material choices the user needs to make.

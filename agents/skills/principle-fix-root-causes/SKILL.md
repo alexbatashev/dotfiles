@@ -1,23 +1,16 @@
 ---
 name: principle-fix-root-causes
-description: "Apply when debugging. Trace each symptom to its root cause and fix it there; reproduce first, ask why until you reach it, resist nil-check guards that silence crashes."
-disable-model-invocation: true
+description: "Investigate the cause of a defect from reproduction, traces, or other direct evidence."
 ---
 
-# Fix Root Causes
+# Fix root causes
 
-When debugging, do not paper over symptoms. Trace every problem to its root cause and fix it there.
+Identify intended behavior, observed behavior, and the smallest useful reproduction. If reproduction is unavailable, work from concrete traces or other evidence and state the limit on confidence.
 
-**Why:** Symptom fixes accumulate. Each workaround makes the system harder to reason about, and the real bug remains. Root-cause fixes are slower upfront but reduce total debugging time.
+Trace the failure to the violated assumption or invariant. Use instrumentation when evidence is missing. A defensive check is useful when it restores the actual contract, not when it merely hides a symptom.
 
-**Pattern:**
-- Reproduce first (if you can't reproduce it, you can't verify your fix)
-- Ask "why" until you hit the root cause
-- Resist the urge to add guards (adding a nil check to silence a crash is a symptom fix)
-- If a workaround needs a paragraph-long comment to justify it, the code is wrong (fix the code, not the comment)
-- Check for the pattern, not just the instance (grep for the same pattern, fix all instances)
-- When stuck, instrument. Don't guess (add logging, read the actual error)
+Check for related instances when evidence suggests a shared defect. Fix those within the requested scope and record unrelated issues in the user's side-quest list.
 
-**Restart bugs: suspect state before code**
+For restart failures, inspect persisted state, configuration, caches, and ownership. Clearing state can establish a clue but is not itself a durable fix.
 
-Code doesn't change between runs. State does. When something "fails after restart," suspect stale persistent state first: config files, caches, lock files, serialized state. If clearing a state file restores behavior, prioritize state validation as the fix.
+When repeated fixes fail, use **principle-attack-the-premise** to reconsider the assumption they share.

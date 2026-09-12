@@ -1,17 +1,12 @@
 ---
 name: principle-guard-the-context-window
-description: "Apply when context is filling up: large outputs, long files, repeated reads, fan-out planning. Filter large outputs before reading; keep only relevant excerpts in context."
-disable-model-invocation: true
+description: "Control large searches and reads to keep relevant evidence in the main session."
 ---
 
-# Guard the Context Window
+# Guard the context window
 
-The context window is finite and non-renewable within a session. Every token that enters should earn its place.
+Filter before reading. Use targeted searches, bounded output, and local scripts to extract relevant sections. Save bulk output to files instead of printing it into the conversation.
 
-**Why:** Context overflow degrades reasoning quality, creates compression artifacts, and halts progress. Unlike compute or time, context spent inside a session cannot be reclaimed.
+Delegate large exploration when it protects the main session's context. Follow the user's model preferences and agent limit. Start each investigator with fresh context and a bounded question. Pass only relevant facts and artifact paths. Request a concise result with evidence, not raw output or a transcript. Keep decisions and synthesis in the main session. A script is usually better for mechanical filtering.
 
-**Pattern:**
-- **Isolate large payloads.** Use targeted searches, bounded output, and local scripts to extract relevant sections. Save bulk output to files. Delegate only when the user explicitly requests subagents.
-- **Don't read what you won't use.** Read selectively based on relevance. If a file isn't needed for the current task, skip it.
-- **Keep frequently used content inline.** Templates and references used on every invocation belong in the skill file, not in separate files that cost a read each time.
-- **Size phases and cap scope.** Limit files per phase, set turn budgets, account for mechanism costs.
+Keep frequently needed facts in a skill's entrypoint. Move substantial conditional detail into references and read only what the task needs. Reuse evidence already gathered instead of repeating exploration.

@@ -2,7 +2,10 @@
 
 - Keep replies concise and easy to read.
 - Use `/unslop` skill always - no exceptions.
-- Avoid unnecessary work: do not run subagents
+- Use judgment about process. Read and check what the task needs, then finish the requested work.
+- Let skills activate when they fit the task. Skill selection does not expand what the user authorized.
+- Record unrelated side quests in `~/project-plans/<project>/side-quests.tsv`. Include the proposed work, why it matters, where it was found, and status. Check for an existing entry before adding one. Do not pursue it unless the user brings it into scope.
+- Keep consequential decision notes in `~/project-plans/<project>/_trails/<date>-<task>.tsv`. Use the **show-me-your-work** skill for the shared format and helper. The main agent owns shared logs. Subagents return discoveries for the main agent to record.
 
 ## Subagents preference
 
@@ -20,6 +23,8 @@ Use table below when choosing a model for a subagent:
 
 Other rules:
 
-- Use subagents when you need to guard your own context: large exploration or a complex subtask
-- When choosing a different model (not yourself) as a subagent don't pass the whole conversation history as context. Limit your instructions only to what's essential for subagent to perform the task
-- Avoid spinning up too many subagents. 3 is a maximum number unless user specified otherwise.
+- Use subagents to protect the main session's context during large exploration, or when explicitly requested. Handle small tasks in the main session.
+- Consult the model table above and the models available in the current client. Choose the least expensive model suited to the task. Never use an expensive large model for simple work.
+- Start subagents with fresh context. Give each one a bounded task, the necessary facts and artifact paths, a stopping condition, and the expected result. Do not inherit or copy the conversation history, even when using the same model. In Codex, use `fork_turns: "none"`.
+- Treat subagents as disposable workers. Keep requirements, decisions, and final synthesis in the main session. Have agents return concise findings, evidence or artifact paths, and blockers. Keep their raw tool output and working notes out of the main thread.
+- Run at most 3 subagents at a time across the task, including nested agents. Close completed agents and start fresh ones as work progresses. Ask before exceeding the concurrent limit.
