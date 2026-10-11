@@ -1,1 +1,2 @@
 async-backend = epoll
+command = /usr/bin/fish

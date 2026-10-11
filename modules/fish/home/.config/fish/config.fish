@@ -1,7 +1,3 @@
-if test -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
-    source /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.fish
-end
-
 fish_add_path $HOME/.local/bin
 
 if test -f $HOME/.local/share/swiftly/env.fish

@@ -39,7 +39,7 @@ arch = false
 macos = "fd"
 
 [fira-font]
-arch = false
+arch = "ttf-fira-sans"
 macos = "font-fira-sans"
 
 [fish]
@@ -115,7 +115,7 @@ arch = "ninja"
 macos = "ninja"
 
 [node]
-arch = "nodejs"
+arch = "nodejs-lts-jod"
 macos = "node"
 
 [obsidian]

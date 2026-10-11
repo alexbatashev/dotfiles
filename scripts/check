@@ -19,11 +19,14 @@ compose() {
 }
 
 compose macbook macos
-compose desktop linux:arch
-compose tower linux:arch
+compose desktop linux:omarchy:arch
+compose tower linux:omarchy:arch
 compose strix linux:omarchy:arch
 compose nuc linux:ubuntu
 compose orion linux:ubuntu
+
+cmp "$root/hosts/desktop.toml" "$root/hosts/tower.toml"
+diff -r "$temp_dir/desktop" "$temp_dir/tower"
 
 test -f "$temp_dir/macbook/home/Library/LaunchAgents/dev.rig.syncthing.plist"
 test -f "$temp_dir/macbook/etc/pam.d/sudo_local"
@@ -37,7 +40,7 @@ test ! -e "$temp_dir/strix/home/.local/libexec/rig-configure-nas-mount"
 test -f "$temp_dir/strix/home/.local/share/applications/com.mitchellh.ghostty.desktop"
 test -f "$temp_dir/orion/home/.config/systemd/user/nas-mount.service"
 
-if rg -n -i 'n[i]x|home[-]manager' \
+if rg -n --hidden '/n[i]x/|[.]n[i]x-profile|home[-]manager|\bn[i]x (store|profile|build|run|shell)\b' \
     "$root/rig.toml" \
     "$root/packages.toml" \
     "$root/hosts" \
