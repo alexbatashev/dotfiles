@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// pack.mjs — lint an artifact and inline everything into one portable .html
-//   node pack.mjs page.html [-o out.html] [--root dir] [--lint-only] [--quiet] [--artifact]
+// pack.mjs — lint a plan and pack it in place into one portable .html
+//   node pack.mjs page.html [-o out.html] [--root dir] [--lint-only] [--quiet] [--artifact out.html]
 // Lint runs the same parsers the browser uses (from htmlplan.js), fills <doc-code src>
 // from disk, inlines htmlplan.css/js and local images, and refuses to write on errors.
+// A packed page stays the source: packing it again refreshes the runtime and the filled code.
 import { readFileSync, writeFileSync, existsSync, statSync, realpathSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { resolve, dirname, extname, basename, relative, sep } from 'node:path';
@@ -15,18 +16,31 @@ require('./htmlplan.js'); // registers globalThis.HtmlPlan (no DOM → parsers o
 const NW = globalThis.HtmlPlan;
 
 const argv = process.argv.slice(2);
-const input = argv.find((a) => !a.startsWith('-') && (argv.indexOf(a) === 0 || !['-o', '--root', '--out'].includes(argv[argv.indexOf(a) - 1])));
-if (!input) { console.error('usage: node pack.mjs page.html [-o out.html] [--root dir] [--lint-only]'); process.exit(2); }
+const input = argv.find((a) => !a.startsWith('-') && (argv.indexOf(a) === 0 || !['-o', '--root', '--out', '--artifact'].includes(argv[argv.indexOf(a) - 1])));
+const usage = () => { console.error('usage: node pack.mjs page.html [-o out.html] [--root dir] [--lint-only] [--artifact out.html]'); process.exit(2); };
+if (!input) usage();
 const opt = (n, d) => { const i = argv.findIndex((a) => a === n); return i >= 0 ? argv[i + 1] : d; };
 const lintOnly = argv.includes('--lint-only'); const quiet = argv.includes('--quiet');
 const inPath = resolve(input); const baseDir = dirname(inPath);
 const roots = argv.flatMap((a, i) => a === '--root' ? [resolve(argv[i + 1].replace(/^~(?=\/)/, process.env.HOME))] : []); if (!roots.length) roots.push(baseDir); const root = roots[0];
-const outPath = resolve(opt('-o', opt('--out', inPath.replace(/(\.src)?\.html?$/, '') + (inPath.includes('.src.') ? '.html' : '.packed.html'))));
+const outPath = resolve(opt('-o', opt('--out', inPath)));
+const artifactArg = argv.includes('--artifact') ? opt('--artifact') : null;
+if (artifactArg === undefined || artifactArg?.startsWith('-')) usage();
 
 let html = readFileSync(inPath, 'utf8');
+// Undo an earlier pack: inlined runtime goes back to links, and everything marked data-packed goes, so this run fills it fresh.
+// Each cut remembers how many lines it removed, so lint messages still name lines of the file on disk.
+html = html.replace(/<doc-(?:code|schema)\b[^>]*\sdata-packed="([^"]*)"[^>]*>/g, (tag, added) =>
+  added.split(/\s+/).filter(Boolean).reduce((t, k) => t.replace(new RegExp(`\\s${k}="[^"]*"`), ''), tag.replace(/\sdata-packed="[^"]*"/, '')));
+const cuts = [];
+{ const lines = (s) => s.split('\n').length - 1; let shift = 0;
+  html = html.replace(/<style data-htmlplan>[\s\S]*?<\/style>|<script data-htmlplan>[\s\S]*?<\/script>|\n?<script type="text\/plain" data-packed\b[^>]*>[\s\S]*?<\/script>/g, (m, idx) => {
+    const keep = m.startsWith('<style') ? `<link rel="stylesheet" href="${resolve(here, 'htmlplan.css')}">`
+      : m.startsWith('<script data-htmlplan>') ? `<script src="${resolve(here, 'htmlplan.js')}" defer></script>` : '';
+    cuts.push([idx - shift + keep.length, lines(m) - lines(keep)]); shift += m.length - keep.length; return keep; }); }
 const errors = [], warns = [], info = [];
 const err = (m) => errors.push(m), warn = (m) => warns.push(m);
-const lineOf = (idx) => html.slice(0, idx).split('\n').length;
+const lineOf = (idx) => html.slice(0, idx).split('\n').length + cuts.reduce((n, [at, k]) => n + (at <= idx ? k : 0), 0);
 const attrs = (s) => { const o = {}; s.replace(/([\w:.-]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'>]+)))?/g, (m, k, a, b, c) => { o[k.toLowerCase()] = a ?? b ?? c ?? ''; return ''; }); return o; };
 const unent = (s) => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&amp;/g, '&');
 const blockSrc = (inner) => { const m = inner.match(/<script\s+type=["']?text\/(?:plain|source)["']?\s*>([\s\S]*?)<\/script>/i); return NW.util.dedent(m ? m[1] : unent(inner.replace(/<doc-pin[\s\S]*?<\/doc-pin>|<template[\s\S]*?<\/template>|<[^>]+>/g, ''))); };
@@ -108,7 +122,7 @@ html = html.replace(/<(doc-(?!plan\b|claim\b)[a-z]+)\b([^>]*)>([\s\S]*?)<\/\1>/g
         
         const s0 = Math.max(1, ln - CTX), s1 = Math.min(L.length, ln + CTX); const slice = L.slice(s0 - 1, s1).join('\n').replace(/<\/script/gi, '<\\/script');
         if (SECRET_TEXT.test(slice)) { warn(`${at}: ${key} looks like it holds a secret — no excerpt`); continue; } reads.add(nd.file);
-        extra += `\n<script type="text/plain" data-excerpt="${key}" data-start="${s0}"${sha ? ` data-sha="${sha}"` : ''}>\n${slice}\n</script>`; added++; }
+        extra += `\n<script type="text/plain" data-packed data-excerpt="${key}" data-start="${s0}"${sha ? ` data-sha="${sha}"` : ''}>\n${slice}\n</script>`; added++; }
       if (added) info.push(`doc-calls${a.id ? '#' + a.id : ''}: embedded ${added} code excerpt${added > 1 ? 's' : ''} (click a row → its code)`);
       if (missing && !added) warn(`${at}: ${missing} rows point at files not found under ${roots.map((r) => relative(process.cwd(), r) || '.').join(', ')} — pass --root <checkout> (and ref="<sha>" for a merged PR) so rows can open their code`);
       else if (missing) warn(`${at}: ${missing} rows point at files not found — those rows will not open code`);
@@ -141,9 +155,10 @@ html = html.replace(/<(doc-(?!plan\b|claim\b)[a-z]+)\b([^>]*)>([\s\S]*?)<\/\1>/g
         if (a.lines) { const mm = a.lines.match(/^(\d+)(?:-(\d+))?$/); if (!mm) err(`${at}: lines="${a.lines}" should look like 40-72`); else { start = +mm[1]; const end = +(mm[2] || mm[1]);   /* lines="40" is that one line */ if (end > total || start < 1 || start > end) err(`${at}: lines="${a.lines}" but ${a.src} has ${total} lines at ${where} — is --root (or ref=) at the commit you're citing?`); text = text.split('\n').slice(start - 1, end).join('\n'); } }
         if (SECRET_TEXT.test(text)) { err(`${at}: ${a.src} looks like it holds a secret — not packaging it`); return whole; } reads.add(a.src);
         const nl = text.split('\n').length; if (nl > 120) warn(`${at}: ${nl} lines of code — readers skim past long listings; slice with lines="a-b"`); else if (nl > 40 && !('collapsed' in a)) warn(`${at}: ${nl}-line slice — over ~40 lines either trim to the part that carries the point or add collapsed`);
-        const extra = (a.file ? '' : ` file="${a.src}"`) + (a.start || !a.lines ? '' : ` start="${start}"`) + (sha && !a.sha ? ` sha="${String(sha).slice(0, 12)}"` : '');
+        const added = Object.entries({ file: a.file ? '' : a.src, start: a.start || !a.lines ? '' : start, sha: sha && !a.sha ? String(sha).slice(0, 12) : '' }).filter(([, v]) => v !== '');
+        const extra = added.map(([k, v]) => ` ${k}="${v}"`).join('') + (added.length ? ` data-packed="${added.map(([k]) => k).join(' ')}"` : '');
         info.push(`filled <${tag} src="${a.src}"${a.lines ? ` lines=${a.lines}` : ''}> from ${where}`);
-        return `<${tag}${rawAttrs}${extra}><script type="text/plain">${text.replace(/<\/script/gi, '<\\/script')}</script>${inner}</${tag}>`;
+        return `<${tag}${rawAttrs}${extra}><script type="text/plain" data-packed>${text.replace(/<\/script/gi, '<\\/script')}</script>${inner}</${tag}>`;
       }
       if (!hasScript && /<(?!\/?doc-pin\b)[a-z]/i.test(inner)) err(`${at}: code contains "<" but isn't wrapped — put the source inside <script type="text/plain">…</script>`);
       if (!hasScript && !inner.trim() && !a.src) err(`${at}: empty`);
@@ -289,12 +304,12 @@ if (errors.length) { console.log(`\n✗ ${errors.length} error(s), ${warns.lengt
 if (lintOnly) { console.log(`✓ lint clean${warns.length ? ` (${warns.length} warning${warns.length > 1 ? 's' : ''})` : ''}`); process.exit(0); }
 writeFileSync(outPath, packed);
 if (reads.size && (!quiet || argv.includes('--artifact'))) console.log(`  code from ${reads.size} file${reads.size > 1 ? 's' : ''} is now inside the page: ${[...reads].sort().join(', ')}`);
-if (argv.includes('--artifact')) {   // the Artifact tool wraps the page in its own <html><head><body>: publish content only
+if (artifactArg) {   // the Artifact tool wraps the page in its own <html><head><body>: publish content only
   const bodyAttrs = attrs((packed.match(/<body\b([^>]*)>/i) || [])[1] || ''); const data = Object.fromEntries(Object.entries(bodyAttrs).filter(([k]) => k.startsWith('data-')).map(([k, v]) => [k.slice(5).replace(/-(\w)/g, (m, c) => c.toUpperCase()), v]));
   let art = packed.replace(/<!doctype[^>]*>\s*/i, '').replace(/<\/?html\b[^>]*>\s*/gi, '').replace(/<meta\b[^>]*charset[^>]*>\s*/i, '').replace(/<\/?head\b[^>]*>\s*/gi, '').replace(/<\/?body\b[^>]*>\s*/gi, '');
   if (Object.keys(data).length) art = art.replace(/<script data-htmlplan>/, `<script>Object.assign(document.body.dataset, ${JSON.stringify(data)});</script>\n<script data-htmlplan>`);
   const ti = (art.match(/<title>([^<]*)<\/title>/i) || [])[1] || ''; if (/[:—–]|\s-\s/.test(ti) || wc(ti) > 5) console.log(`  ⚠ <title> "${ti.trim()}" — a published artifact is named like a document: 2–4 words, no "Plan:" prefix, no explainer after a dash`);
-  const artPath = outPath.replace(/(\.packed)?\.html?$/, '.artifact.html'); writeFileSync(artPath, art);
+  const artPath = resolve(artifactArg); writeFileSync(artPath, art);
   console.log(`✓ ${rel(artPath)}  publish this one with the Artifact tool`);
 }
 console.log(`✓ ${rel(outPath)}  ${(Buffer.byteLength(packed) / 1024).toFixed(0)} KB · ${inlined} asset(s) inlined${warns.length ? ` · ${warns.length} warning(s)` : ''}`);

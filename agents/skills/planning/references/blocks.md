@@ -217,11 +217,11 @@ For a few steps in order, use plain cards: `<div class="cols"><div class="card">
 ## pack.mjs
 
 ```
-node runtime/pack.mjs plan.html [--root <repo>]… [-o out.html] [--lint-only] [--artifact] [--quiet]
+node runtime/pack.mjs plan.html [--root <repo>]… [-o out.html] [--lint-only] [--artifact <out.html>] [--quiet]
 ```
 
 - Lints every block with the same parsers the browser uses, and the shape of the tree.
 - Fills `src=` blocks and call-row excerpts from `--root` (or from git with `ref=`). With several `--root`s it looks in each in order, then beside the page. It reads nothing outside those folders, refuses files that look like they hold a secret, and ends by listing every file whose code is now inside the page. Check that list before you publish or share.
-- Inlines the runtime and local images. Writes `plan.packed.html`.
-- `--artifact` also writes `plan.artifact.html`, the page without its own `<html>` and `<body>`, for a host that adds them.
+- Inlines the runtime and local images into the page itself. A packed page is still the source: pack it again after an edit, and it refreshes the runtime and everything marked `data-packed`.
+- `--artifact <out.html>` also writes the page without its own `<html>` and `<body>`, for a host that adds them. Write it to a scratch folder, not the plan directory.
 - Errors stop the write. Warnings are budgets for words and phone width: fix them or accept them knowingly.
