@@ -7,12 +7,14 @@ description: "Debug a performance problem with miniperf (mperf). Use when asked 
 
 Use `mperf` for every measurement it supports. Reach for `perf` only for what `mperf` lacks, such as scheduler traces.
 
-Four rules decide whether the work is accepted:
+Six rules decide whether the work is accepted:
 
 1. Every change starts from a measurement that names the bottleneck. A hotspot list, a self-time table, or a counter of work done (rows, calls, iterations) does not name one.
 2. Top-down numbers come from the tool. Read them from `tma_summary`, `tma`, or `mperf stat --topdown`. Do not compute your own formulas over `pmu_*` columns or hand-picked raw events and call the result TMA. If `mperf` lacks a level on this CPU, say so and label anything you derive as derived.
 3. After a change, record again and compare the same tree. Wall time alone does not show whether the hypothesis was right.
 4. If sampling is unavailable, stop. Do not fall back to reading the code, timing by hand, or reasoning about what is probably slow. See "When sampling is unavailable" below.
+5. Use `/how` skill to ground your hypotheses.
+6. Plan the fix from the trace. If it crosses a function boundary, architect first. Delegate implementation to a subagent.
 
 ## Install
 

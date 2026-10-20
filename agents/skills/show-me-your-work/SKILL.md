@@ -31,6 +31,6 @@ The main agent owns shared logs. Subagents return findings with evidence so the 
 
 ## Review
 
-Check entries against actual artifacts and available evidence. Use the current client's transcript only when needed to resolve what happened. Locate that session from its metadata, scope reads to the current workspace and task, and do not assume a Cursor-specific path.
+Check entries against actual artifacts and available evidence. Use the current client's transcript only when needed to resolve what happened. Locate that session from its metadata, scope reads to the current workspace and task, and use the active client's storage layout.
 
 Keep logs with the shared project plans. Commit or publish them only when requested or required by the project's delivery workflow. Link the relevant log in the handoff when it helps the user review the work.
