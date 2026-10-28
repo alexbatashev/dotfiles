@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "playbook",
+    "principles",
+    "reason"
+  ],
+  "properties": {
+    "playbook": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "principles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "reason": {
+      "type": "string"
+    }
+  }
+}

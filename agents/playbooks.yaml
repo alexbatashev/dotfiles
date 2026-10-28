@@ -1,0 +1,59 @@
+version: 1
+instructions: 'Open a todolist whose first items are the matched playbook''s steps, copied in verbatim, before any task-specific todos. A step you choose not to do stays in the list with a one-line `skip: <reason>`. Match the task to a playbook below and open its full steps at `~/dotfiles/agents/playbooks/<title>.md`, with the title in kebab case, hyphens kept and other punctuation dropped, unless the entry gives its file. Copy its steps in verbatim.'
+playbooks:
+- id: investigation
+  name: Investigation
+  when: 'Read-only question: how does X work, why was Y built this way, are we sure about Z, should we do X or Y.'
+  path: playbooks/investigation.md
+- id: bug-fix
+  name: Bug fix
+  when: A reported defect to reproduce, root-cause, and fix with runtime evidence.
+  path: playbooks/bug-fix.md
+- id: hillclimb
+  name: Hillclimb
+  when: 'Sustained, scientific improvement of one metric against a target: loop hypotheses with before/after measurement, a decision log, and one commit per accepted win. Distinct from Perf issue, which is a one-off fix.'
+  path: playbooks/hillclimb.md
+- id: runtime-forensics
+  name: Runtime forensics
+  when: Diagnose a runtime symptom (leak, idle-CPU spin, glitch) from live instrumentation. The deliverable is a diagnosis, not a fix.
+  path: playbooks/runtime-forensics.md
+- id: trace-forensics
+  name: Trace forensics
+  when: Diagnose a captured profiling artifact (cpuprofile, trace, spindump, heap snapshot) handed to you after the fact. The deliverable is a diagnosis, not a fix.
+  path: playbooks/trace-forensics.md
+- id: feature
+  name: Feature
+  when: New or changed behavior, built from a named data shape.
+  path: playbooks/feature.md
+- id: refactoring
+  name: Refactoring
+  when: A behavior-preserving change to structure or shape (rename, extract, inline, dedupe, move).
+  path: playbooks/refactoring.md
+- id: prototype
+  name: Prototype
+  when: A throwaway sketch to make a design or behavioral decision cheaply, or to settle an empirical fork by observing it instead of asking the human ("prototype", "mock it up", "try this layout", "sketch it to decide").
+  path: playbooks/prototype.md
+- id: visual-parity
+  name: Visual parity
+  when: 'Pixel-exact UI equivalence: matching two implementations or migrating a styling system.'
+  path: playbooks/visual-parity.md
+- id: authoring-or-modifying-a-skill
+  name: Authoring or modifying a skill
+  when: 'Writing or editing a SKILL.md. File: `playbooks/authoring-a-skill.md`.'
+  path: playbooks/authoring-a-skill.md
+- id: eval
+  name: Eval
+  when: Testing how a skill, structure, or prompt change affects agent behavior before promoting it.
+  path: playbooks/eval.md
+- id: session-pickup
+  name: Session pickup
+  when: Resuming or taking over a prior agent's in-flight work from a transcript, cloud-agent URL, or pushed branch.
+  path: playbooks/session-pickup.md
+- id: pause-safely
+  name: Pause safely
+  when: Suspending in-flight work cleanly so it can be resumed, on an explicit pause, going offline, a client restart, or imminent context compaction. The complement to Session pickup.
+  path: playbooks/pause-safely.md
+- id: worktree-and-simulator-cleanup
+  name: Worktree and simulator cleanup
+  when: 'Reclaiming local disk by pruning merged or abandoned git worktrees and stale iOS simulators ("what''s using my disk", "clean up worktrees", "prune safe-to-prune worktrees", "free up space", "delete old simulators"). File: `playbooks/worktree-cleanup.md`.'
+  path: playbooks/worktree-cleanup.md

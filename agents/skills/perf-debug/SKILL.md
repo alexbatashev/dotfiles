@@ -1,9 +1,21 @@
 ---
 name: perf-debug
-description: "Debug a performance problem with miniperf (mperf). Use when asked to profile, find a bottleneck, explain a slowdown, speed something up, or apply TMA or USE methodology."
+description: "Use when debugging a performance issue or a regression"
 ---
 
-# Perf debug
+# Debugging performance issues
+
+## General guideance
+
+1. Every hypothesis must be grounded with real-world measurement. Use a profiler or a microbenchmark to back your findings.
+2. Run workloads in their native environment. If the code is supposed to run on a desktop, do not try to pin cores and isolate the process. That is unfaithful to how the code will be executed in production.
+3. For CPU or memory bound problems use TMA analysis to figure out how much headroom you have.
+4. These are the techniques used to combat CPU-bound issues:
+   1. Don't do it. If some result is unused, just cut it.
+   2. Use data-oriented design. Always start with reasoning about how data is stored in memory and whether this is the most optimal layout given CPU architecture.
+   3. Design optimal algorithms - exploit data parallelism and knowledge of modern CPU pipelines.
+
+## Miniperf and TMA methodology for native code
 
 Use `mperf` for every measurement it supports. Reach for `perf` only for what `mperf` lacks, such as scheduler traces.
 
@@ -16,7 +28,7 @@ Six rules decide whether the work is accepted:
 5. Use `/how` skill to ground your hypotheses.
 6. Plan the fix from the trace. If it crosses a function boundary, architect first. Delegate implementation to a subagent.
 
-## Install
+### Install
 
 ```sh
 command -v mperf && mperf doctor
@@ -45,7 +57,7 @@ Unpack `dist/miniperf-*.tar.gz` the same way. For `stat`, `snapshot`, and `tma` 
 
 Run `mperf doctor` and read every row that is not `ok`. `perf_event_paranoid` above 2 blocks everything. Level 0 or lower adds system-wide events, and -1 lifts the per-user sampling buffer budget on machines with many CPUs. The snapshot BPF collector needs root and `bpftrace`.
 
-### When sampling is unavailable
+#### When sampling is unavailable
 
 Sampling is unavailable when `mperf doctor` reports a blocker on `perf_event_paranoid` or `hardware counters`, or when `mperf record` fails to open its counters or map its buffers. A container or VM without PMU access shows the same symptoms.
 
@@ -61,7 +73,7 @@ Check for passwordless sudo with `sudo -n true`.
 
 A degraded row is different from a blocker. A snapshot without the BPF collector still records the other resources, so continue and say which evidence is missing. Stop only when the missing collector is the one the question depends on.
 
-## Prepare the run
+### Prepare the run
 
 - Build optimized with debug info: `-O2 -g` for C, `CARGO_PROFILE_RELEASE_DEBUG=true cargo build --release` for Rust. `mperf` unwinds through branch records or DWARF, so a separate frame-pointer build is optional.
 - Make the run last at least 5 seconds. Counter groups take turns on the hardware, so a short run gives noisy level-2 values. Wrap a short command in a script that repeats it.
@@ -74,7 +86,7 @@ taskset -c 4 mperf record -s tma -o prof/base-O2 -- ./workload > prof/base-O2.lo
 grep -aE '^(Capture fidelity|Warning|Error)' prof/base-O2.log
 ```
 
-## Measure
+### Measure
 
 Counts for a whole run, with no profile:
 
@@ -103,7 +115,7 @@ taskset -c 4 mperf record -s tma -o prof/tma -- ./workload
 taskset -c 4 mperf record -s mem -o prof/mem -- ./workload --small-input
 ```
 
-## Query
+### Query
 
 `mperf query DIR 'SQL'` runs one read-only DuckDB statement. Facts that prevent most failed queries:
 
@@ -255,7 +267,7 @@ ORDER BY greatest(coalesce(a.total, 0), coalesce(b.total, 0)) DESC LIMIT 20;
 
 Shares hide a speedup that shrinks everything equally. Compare `cycles` as well when the total changed.
 
-## Methodology
+### Methodology
 
 Work from the whole system down to one instruction. Write down each reading before acting on it.
 
@@ -298,7 +310,7 @@ Check these before trusting any reading:
 - A large `[unknown]` share means missing debug info. Rebuild with `-g` or set `DEBUGINFOD_URLS` and `MINIPERF_DEBUGINFOD=1`.
 - Compare only runs taken on the same machine with the same pinning, input, and build flags.
 
-## Replace perf habits
+### Replace perf habits
 
 | Instead of | Use |
 |---|---|
