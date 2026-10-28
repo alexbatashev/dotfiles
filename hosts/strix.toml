@@ -11,4 +11,5 @@ modules = [
   "scripts",
   "syncthing",
   "tmux",
+  "zsh",
 ]

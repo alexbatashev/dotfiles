@@ -12,6 +12,8 @@ compose() {
     output=$temp_dir/$host
     "$rig_bin" compose --host "$host" --os "$os" --out "$output" "$root"
     test -f "$output/home/.config/fish/config.fish"
+    test -f "$output/home/.zshenv"
+    test -f "$output/home/.config/zsh/.zshrc"
     test -f "$output/home/.config/git/config"
     test -f "$output/home/.config/ghostty/config"
     test -f "$output/home/.config/helix/config.toml"

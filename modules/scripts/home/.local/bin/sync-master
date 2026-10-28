@@ -1,0 +1,68 @@
+#!/bin/sh
+# Fast-forward the local trunk (master or main) from upstream, or origin.
+# Usage: sync-master [remote]
+set -eu
+
+if jj root >/dev/null 2>&1; then
+  vcs=jj
+else
+  vcs=git
+fi
+
+has_remote() {
+  if [ "$vcs" = jj ]; then
+    jj git remote list | grep -q "^$1 "
+  else
+    git remote get-url "$1" >/dev/null 2>&1
+  fi
+}
+
+short_id() {
+  if [ "$vcs" = jj ]; then
+    jj log --no-graph -r "present($1)" -T 'commit_id.short(7)'
+  else
+    git rev-parse -q --verify --short=7 "$1^{commit}" || true
+  fi
+}
+
+remote=${1:-}
+if [ -z "$remote" ]; then
+  if has_remote upstream; then remote=upstream; else remote=origin; fi
+fi
+
+# Record both candidates before fetching: jj fetch moves tracked bookmarks itself.
+old_master=$(short_id master)
+old_main=$(short_id main)
+
+if [ "$vcs" = jj ]; then
+  jj git fetch --quiet --remote "$remote"
+  if [ -n "$(short_id "master@$remote")" ]; then trunk=master; else trunk=main; fi
+  new=$(short_id "$trunk@$remote")
+  # Fails here if the fetch left a diverged bookmark conflicted.
+  local_id=$(short_id "$trunk")
+  if [ -z "$local_id" ]; then
+    jj bookmark track --quiet "$trunk" --remote "$remote"
+  else
+    jj bookmark set --quiet "$trunk" -r "$trunk@$remote"
+  fi
+else
+  git fetch --quiet "$remote"
+  if [ -n "$(short_id "refs/remotes/$remote/master")" ]; then trunk=master; else trunk=main; fi
+  new=$(short_id "refs/remotes/$remote/$trunk")
+  if [ "$(git symbolic-ref -q --short HEAD)" = "$trunk" ]; then
+    git merge --quiet --ff-only "$remote/$trunk"
+  elif [ -n "$(short_id "refs/heads/$trunk")" ] &&
+    ! git merge-base --is-ancestor "$trunk" "$remote/$trunk"; then
+    echo "sync-master: $trunk has diverged from $remote/$trunk, not updating" >&2
+    exit 1
+  else
+    git fetch --quiet "$remote" "$trunk:$trunk"
+  fi
+fi
+
+if [ "$trunk" = master ]; then old=$old_master; else old=$old_main; fi
+if [ "$old" = "$new" ]; then
+  echo "$trunk already up to date at $new"
+else
+  echo "$trunk: ${old:-(new)}..$new from $remote"
+fi

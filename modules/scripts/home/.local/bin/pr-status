@@ -1,0 +1,44 @@
+#!/bin/sh
+# Show a GitHub PR's merge state and what blocks it.
+# Usage: pr-status [number|url|branch]
+set -eu
+
+pr=${1:-}
+# jj leaves git HEAD detached, so gh cannot infer the branch; use the nearest bookmark.
+if [ -z "$pr" ] && ! git symbolic-ref -q HEAD >/dev/null && jj root >/dev/null 2>&1; then
+  pr=$(jj log --no-graph -r 'heads(::@ & bookmarks())' \
+    -T 'local_bookmarks.map(|b| b.name()).join("\n") ++ "\n"' | head -n 1)
+  if [ -z "$pr" ]; then
+    echo "pr-status: no bookmark at or below @" >&2
+    exit 1
+  fi
+fi
+
+# statusCheckRollup mixes CheckRun (name, status, conclusion)
+# and StatusContext (context, state) items.
+format='
+def or_none: if . == null or . == "" then "NONE" else . end;
+def failed: (.conclusion // .state) | IN("FAILURE", "CANCELLED", "TIMED_OUT", "ACTION_REQUIRED", "ERROR");
+def pending: (.status != null and .status != "COMPLETED") or .state == "PENDING" or .state == "EXPECTED";
+
+(.statusCheckRollup // []) as $checks
+| (if .state != "OPEN" then [] else [
+    (select(.isDraft) | "draft"),
+    (select(.mergeable == "CONFLICTING") | "merge conflicts"),
+    (select(.mergeStateStatus == "BEHIND") | "branch behind base"),
+    (select(.reviewDecision == "CHANGES_REQUESTED") | "changes requested"),
+    (select(.reviewDecision == "REVIEW_REQUIRED") | "review required"),
+    ($checks[] | select(failed) | "failing check: \(.name // .context)"),
+    ([$checks[] | select(pending)] | length | select(. > 0) | "\(.) pending checks")
+  ] end) as $found
+| (if $found == [] and .mergeStateStatus == "BLOCKED"
+    then ["blocked by a rule gh does not expose (see the PR page)"] else $found end) as $blockers
+| "#\(.number) \(.title)",
+  .url,
+  "state: \(.state)  merge: \(.mergeStateStatus)  mergeable: \(.mergeable)  review: \(.reviewDecision | or_none)",
+  if $blockers == [] then "blockers: none" else "blockers:", ($blockers[] | "  - \(.)") end
+'
+
+gh pr view ${pr:+"$pr"} \
+  --json number,title,url,state,isDraft,mergeable,mergeStateStatus,reviewDecision,statusCheckRollup \
+  --jq "$format"

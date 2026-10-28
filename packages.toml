@@ -186,3 +186,15 @@ macos = "zed"
 [zoxide]
 arch = "zoxide"
 macos = "zoxide"
+
+[zsh]
+arch = "zsh"
+macos = false
+
+[zsh-autosuggestions]
+arch = "zsh-autosuggestions"
+macos = "zsh-autosuggestions"
+
+[zsh-syntax-highlighting]
+arch = "zsh-syntax-highlighting"
+macos = "zsh-syntax-highlighting"

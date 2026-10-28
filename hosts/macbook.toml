@@ -12,5 +12,6 @@ modules = [
   "syncthing",
   "tmux",
   "zed",
+  "zsh",
   "macos",
 ]
